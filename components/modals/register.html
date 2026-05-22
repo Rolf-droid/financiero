@@ -1,0 +1,47 @@
+<div class="modal-overlay" id="modal-register">
+  <div class="modal-box" style="max-width:460px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h3>👥 Registrar Usuario</h3>
+      <span id="reg-counter" style="font-size:.75rem;font-weight:600;color:#64748B;background:#F1F5F9;padding:4px 12px;border-radius:20px;border:1px solid #E2E8F0">0 / 5 usuarios</span>
+    </div>
+    <p>Completa los datos del nuevo usuario. Se permiten hasta <strong>5 usuarios</strong> registrados.</p>
+
+    <label class="login-label" for="reg-nombre">Nombre completo</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">👤</span>
+      <input class="login-input" type="text" id="reg-nombre" placeholder="Ej: Juan Pérez">
+    </div>
+
+    <label class="login-label" for="reg-user" style="margin-top:14px">Usuario (para iniciar sesión)</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🪪</span>
+      <input class="login-input" type="text" id="reg-user" placeholder="Ej: jperez">
+    </div>
+
+    <label class="login-label" for="reg-email" style="margin-top:14px">Correo electrónico</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✉️</span>
+      <input class="login-input" type="email" id="reg-email" placeholder="tucorreo@gmail.com">
+    </div>
+
+    <label class="login-label" for="reg-pass" style="margin-top:14px">Contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      <button class="login-show-btn" onclick="toggleRegPass()" id="reg-show-btn">👁</button>
+    </div>
+
+    <div id="reg-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+
+    <!-- Lista de usuarios registrados -->
+    <div id="reg-list-wrap" style="margin-top:18px;display:none">
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64748B;margin-bottom:8px">Usuarios registrados</div>
+      <div id="reg-list" style="display:flex;flex-direction:column;gap:6px;max-height:130px;overflow-y:auto"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeRegister()">Cerrar</button>
+      <button class="btn-modal-send" onclick="doRegister()" id="btn-do-register">✅ Registrar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div id="page-ajustes" class="page">
+  <div class="page-header">
+    <h2>⚙️ Ajustes — Gestión de Cuentas</h2>
+    <p>Administra los usuarios del sistema, sus contraseñas y niveles de acceso.</p>
+  </div>
+
+  <!-- VIEWER BLOCKER (solo visible si el usuario actual es viewer) -->
+  <div id="ajustes-blocked" style="display:none;background:#FEF2F2;border:1.5px solid #FECACA;
+       border-radius:12px;padding:28px;text-align:center;margin-bottom:20px">
+    <div style="font-size:2.5rem;margin-bottom:10px">🔒</div>
+    <div style="font-size:1rem;font-weight:700;color:#991B1B">Acceso restringido</div>
+    <div style="font-size:.82rem;color:#B91C1C;margin-top:6px">Tu cuenta tiene permisos de <strong>Solo Lectura</strong>. Contacta al administrador para gestionar usuarios.</div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="ajustes-panel">
+
+    <!-- CUENTA ADMIN (fija) -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><span>👑</span> Cuenta Administrador (predeterminada)</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+                  background:#F0F9FF;border:1px solid #BAE6FD;border-radius:10px;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#10B981);
+                      display:grid;place-items:center;font-size:1.3rem;flex-shrink:0">👑</div>
+          <div>
+            <div style="font-weight:700;color:#0B1F3A;font-size:.9rem">Admin</div>
+            <div style="font-size:.72rem;color:#64748B;margin-top:2px">
+              <span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:20px;font-weight:700;font-size:.65rem">EDITOR</span>
+              &nbsp;· Cuenta principal del sistema
+            </div>
+          </div>
+        </div>
+        <button class="btn-secondary" style="font-size:.78rem;padding:7px 14px" onclick="openAdminPassModal()">
+          🔑 Cambiar Contraseña
+        </button>
+      </div>
+    </div>
+
+    <!-- USUARIOS REGISTRADOS -->
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span><span>👥</span> Usuarios Registrados</span>
+        <span id="ajustes-counter" style="font-size:.72rem;font-weight:600;color:#64748B;
+              background:#F1F5F9;padding:3px 12px;border-radius:20px;border:1px solid #E2E8F0">0 / 5</span>
+      </div>
+
+      <div id="ajustes-empty" style="text-align:center;padding:32px;color:#94A3B8;font-size:.85rem">
+        <div style="font-size:2rem;margin-bottom:8px">👤</div>
+        No hay usuarios registrados aún.<br>
+        <span style="font-size:.75rem">Usa el botón <strong>"Registrarse"</strong> en el login para agregar usuarios.</span>
+      </div>
+
+      <div id="ajustes-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+  </div><!-- /ajustes-panel -->
+</div>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Financiero | Comercial Andina S.A.C.</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="modal-overlay" id="modal-forgot">
+  <div class="modal-box">
+    <h3>🔑 Recuperar Contraseña</h3>
+    <p>Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.</p>
+    <label class="login-label" for="forgot-email">Correo electrónico</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✉️</span>
+      <input class="login-input" type="email" id="forgot-email" placeholder="tucorreo@gmail.com">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeForgot()">Cancelar</button>
+      <button class="btn-modal-send" onclick="sendForgot()">📨 Enviar Instrucciones</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-register">
+  <div class="modal-box" style="max-width:460px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h3>👥 Registrar Usuario</h3>
+      <span id="reg-counter" style="font-size:.75rem;font-weight:600;color:#64748B;background:#F1F5F9;padding:4px 12px;border-radius:20px;border:1px solid #E2E8F0">0 / 5 usuarios</span>
+    </div>
+    <p>Completa los datos del nuevo usuario. Se permiten hasta <strong>5 usuarios</strong> registrados.</p>
+
+    <label class="login-label" for="reg-nombre">Nombre completo</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">👤</span>
+      <input class="login-input" type="text" id="reg-nombre" placeholder="Ej: Juan Pérez">
+    </div>
+
+    <label class="login-label" for="reg-user" style="margin-top:14px">Usuario (para iniciar sesión)</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🪪</span>
+      <input class="login-input" type="text" id="reg-user" placeholder="Ej: jperez">
+    </div>
+
+    <label class="login-label" for="reg-email" style="margin-top:14px">Correo electrónico</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✉️</span>
+      <input class="login-input" type="email" id="reg-email" placeholder="tucorreo@gmail.com">
+    </div>
+
+    <label class="login-label" for="reg-pass" style="margin-top:14px">Contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      <button class="login-show-btn" onclick="toggleRegPass()" id="reg-show-btn">👁</button>
+    </div>
+
+    <div id="reg-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+
+    <!-- Lista de usuarios registrados -->
+    <div id="reg-list-wrap" style="margin-top:18px;display:none">
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64748B;margin-bottom:8px">Usuarios registrados</div>
+      <div id="reg-list" style="display:flex;flex-direction:column;gap:6px;max-height:130px;overflow-y:auto"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeRegister()">Cerrar</button>
+      <button class="btn-modal-send" onclick="doRegister()" id="btn-do-register">✅ Registrar</button>
+    </div>
+  </div>
+</div>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">📊</div>
+      <h1>Comercial Andina S.A.C.</h1>
+      <p>Sistema de Reportes Financieros 2024</p>
+    </div>
+
+    <label class="login-label" for="login-user">Usuario</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">👤</span>
+      <input class="login-input" type="text" id="login-user" placeholder="Ej: Admin" autocomplete="username">
+    </div>
+
+    <label class="login-label" for="login-pass">Contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()">
+      <button class="login-show-btn" onclick="togglePass()" id="show-btn" title="Mostrar/ocultar">👁</button>
+    </div>
+
+    <a class="login-forgot" onclick="openForgot()">¿Olvidaste tu contraseña?</a>
+
+    <button class="login-btn" onclick="doLogin()">Iniciar Sesión →</button>
+
+    <button class="login-btn" style="margin-top:10px;background:linear-gradient(135deg,#1E3A5F,#10B981)" onclick="openRegister()">
+      👥 Registrarse
+    </button>
+
+    <div class="login-error" id="login-error">❌ Usuario o contraseña incorrectos. Inténtalo de nuevo.</div>
+
+    <div class="login-divider">— Acceso de demostración —</div>
+    <div class="login-demo-hint">
+      👤 <strong>Usuario:</strong> Admin &nbsp;&nbsp;🔒 <strong>Contraseña:</strong> andina2024
+    </div>
+  </div>
+</div>
+<div class="layout">
+
+<!-- ════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">📊</div>
+    <div class="brand-name">Comercial Andina</div>
+    <div class="brand-sub">Sistema Financiero 2024</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Módulos</div>
+    <button class="nav-item active" onclick="showPage('datos')">
+      <span class="nav-icon">📝</span>
+      <span class="nav-text">Ingreso de Datos</span>
+    </button>
+    <button class="nav-item" onclick="showPage('resultados')">
+      <span class="nav-icon">📈</span>
+      <span class="nav-text">Estado de Resultados</span>
+    </button>
+    <button class="nav-item" onclick="showPage('flujo')">
+      <span class="nav-icon">💸</span>
+      <span class="nav-text">Flujo de Caja</span>
+    </button>
+    <button class="nav-item" onclick="showPage('balance')">
+      <span class="nav-icon">🏛</span>
+      <span class="nav-text">Balance General</span>
+    </button>
+    <button class="nav-item" onclick="showPage('dashboard')">
+      <span class="nav-icon">📐</span>
+      <span class="nav-text">Dashboard & Ratios</span>
+    </button>
+    <button class="nav-item" onclick="showPage('ajustes')" id="nav-ajustes">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-text">Ajustes</span>
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div id="clock-side"></div>
+    <div style="margin-top:6px;display:flex;align-items:center;gap:6px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#10B981;flex-shrink:0"></span>
+      <span style="color:#94A3B8;font-size:.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sidebar-user-label">—</span>
+    </div>
+    <div style="margin-top:2px;color:#475569;font-size:.62rem" id="sidebar-role-label"></div>
+    <div style="margin-top:3px;color:#475569;font-size:.65rem">Soles (S/) · Ej. 2024</div>
+  </div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📝 Ingreso de Datos</div>
+    <div class="topbar-right">
+      <span class="live-badge"><span class="live-dot"></span>Cálculo en tiempo real</span>
+      <span class="chip" id="balance-chip">⏳ Ingresa datos</span>
+      <button class="btn-save" onclick="calcularTodo()">⚡ Actualizar</button>
+    </div>
+  </div>
+
+  <div class="content">
+<div id="page-datos" class="page active">
+  <div class="page-header">
+    <h2>📝 Ingreso de Datos Financieros</h2>
+    <p>Ingresa los valores del período. Los informes se calcularán automáticamente.</p>
+  </div>
+
+  <div class="alert info">
+    💡 <div>Los campos en <strong>azul</strong> son modificables. Todos los cálculos se actualizan en tiempo real. Haz clic en <strong>"Actualizar"</strong> o presiona <strong>Tab</strong> entre campos para refrescar los resultados.</div>
+  </div>
+
+  <!-- INGRESOS Y COSTOS -->
+  <div class="card">
+    <div class="card-title"><span>💰</span> Ingresos y Costos Operacionales</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Ventas de Mercadería (S/)</label>
+        <input class="input-blue" type="number" id="ventas" value="30000" oninput="calcularTodo()">
+        <span class="form-hint">Ingresos por venta de productos</span>
+      </div>
+      <div class="form-group">
+        <label>Prestación de Servicios (S/)</label>
+        <input class="input-blue" type="number" id="servicios" value="1500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otros Ingresos (S/)</label>
+        <input class="input-blue" type="number" id="otros_ing" value="100" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Costo de Ventas (S/)</label>
+        <input class="input-blue" type="number" id="costo_ventas" value="200" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos de Ventas (S/)</label>
+        <input class="input-blue" type="number" id="gs_ventas" value="60" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos Administrativos (S/)</label>
+        <input class="input-blue" type="number" id="gs_admin" value="600" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos Financieros (S/)</label>
+        <input class="input-blue" type="number" id="gs_fin" value="300" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Depreciación (S/)</label>
+        <input class="input-blue" type="number" id="deprec" value="500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Tasa Impuesto Renta (%)</label>
+        <input class="input-blue" type="number" id="tasa_ir" value="29.5" step="0.1" oninput="calcularTodo()">
+        <span class="form-hint">Por defecto: 29.5%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUJO DE CAJA -->
+  <div class="card">
+    <div class="card-title"><span>💸</span> Flujo de Caja</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cobranzas a Clientes (S/)</label>
+        <input class="input-blue" type="number" id="cobranzas" value="45000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos a Proveedores (S/)</label>
+        <input class="input-blue" type="number" id="pag_prov" value="30000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos de Planillas (S/)</label>
+        <input class="input-blue" type="number" id="pag_plan" value="15000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos de Tributos (S/)</label>
+        <input class="input-blue" type="number" id="pag_trib" value="12500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Compra de Activos Fijos (S/)</label>
+        <input class="input-blue" type="number" id="compra_af" value="120" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Préstamos Recibidos (S/)</label>
+        <input class="input-blue" type="number" id="prestamos" value="450" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Amortización de Deudas (S/)</label>
+        <input class="input-blue" type="number" id="amort" value="45000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Saldo Inicial de Caja (S/)</label>
+        <input class="input-blue" type="number" id="saldo_ini" value="4600" oninput="calcularTodo()">
+      </div>
+    </div>
+  </div>
+
+  <!-- BALANCE: ACTIVOS -->
+  <div class="card">
+    <div class="card-title"><span>🏛</span> Balance General — Activos, Pasivos y Patrimonio</div>
+    <div class="section-divider">ACTIVO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Caja y Bancos (S/)</label>
+        <input class="input-blue" type="number" id="caja" value="1500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Cuentas por Cobrar (S/)</label>
+        <input class="input-blue" type="number" id="cxc" value="2500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Inventarios (S/)</label>
+        <input class="input-blue" type="number" id="inventarios" value="3500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">ACTIVO NO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Activos Fijos Netos (S/)</label>
+        <input class="input-blue" type="number" id="af_netos" value="4500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otros Activos (S/)</label>
+        <input class="input-blue" type="number" id="otros_act" value="5500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PASIVO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Cuentas por Pagar (S/)</label>
+        <input class="input-blue" type="number" id="cxp" value="6500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otras Deudas (S/)</label>
+        <input class="input-blue" type="number" id="otras_deudas" value="8500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PASIVO NO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Deudas a Largo Plazo (S/)</label>
+        <input class="input-blue" type="number" id="dlp" value="7500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PATRIMONIO</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Capital Social (S/)</label>
+        <input class="input-blue" type="number" id="capital" value="9500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Reservas (S/)</label>
+        <input class="input-blue" type="number" id="reservas" value="10000" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px;">
+      <button class="btn-primary" onclick="calcularTodo(); showToast('✅ Cálculos realizados correctamente','success')">⚡ Calcular Todo</button>
+      <button class="btn-secondary" onclick="restaurarEjemplo()">↩ Restaurar Ejemplo</button>
+    </div>
+  </div>
+</div>
+<div id="page-resultados" class="page">
+  <div class="page-header">
+    <h2>📈 Estado de Resultados Integrales</h2>
+    <p>Del 01 de enero al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip" id="er-kpis">
+    <div class="kpi t"><div class="kpi-icon">💰</div><div class="kpi-label">Total Ingresos</div><div class="kpi-value" id="k-ing">—</div><div class="kpi-sub">Ventas + Servicios + Otros</div></div>
+    <div class="kpi g"><div class="kpi-icon">📊</div><div class="kpi-label">Utilidad Bruta</div><div class="kpi-value" id="k-bruta">—</div><div class="kpi-sub">Ingresos − Costo Ventas</div></div>
+    <div class="kpi a"><div class="kpi-icon">⚙️</div><div class="kpi-label">EBIT</div><div class="kpi-value" id="k-ebit">—</div><div class="kpi-sub">Utilidad Operativa</div></div>
+    <div class="kpi g"><div class="kpi-icon">🏆</div><div class="kpi-label">Utilidad Neta</div><div class="kpi-value" id="k-neta">—</div><div class="kpi-sub">Después de impuestos</div></div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-resultados')">🖨️ Imprimir</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📋</span> Detalle del Estado de Resultados</div>
+    <table class="stmt-table">
+      <tbody id="er-body"></tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid-2">
+    <div class="chart-box">
+      <h3>📊 Composición de Ingresos</h3>
+      <div class="chart-desc">Desglose por fuente de ingreso</div>
+      <div class="chart-wrap"><canvas id="ch-ingresos"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🎯 Cascada de Resultados</h3>
+      <div class="chart-desc">Ingresos → Costos → Utilidades</div>
+      <div class="chart-wrap"><canvas id="ch-cascade"></canvas></div>
+    </div>
+  </div>
+</div>
+<div id="page-flujo" class="page">
+  <div class="page-header">
+    <h2>💸 Estado de Flujo de Efectivo</h2>
+    <p>Del 01 de enero al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi t"><div class="kpi-icon">🔄</div><div class="kpi-label">Flujo Operación</div><div class="kpi-value" id="k-op">—</div><div class="kpi-sub">Actividades operativas</div></div>
+    <div class="kpi a"><div class="kpi-icon">🏗️</div><div class="kpi-label">Flujo Inversión</div><div class="kpi-value" id="k-inv">—</div><div class="kpi-sub">Compra de activos</div></div>
+    <div class="kpi p"><div class="kpi-icon">🏦</div><div class="kpi-label">Flujo Financ.</div><div class="kpi-value" id="k-fin">—</div><div class="kpi-sub">Préstamos y deudas</div></div>
+    <div class="kpi r"><div class="kpi-icon">💼</div><div class="kpi-label">Saldo Final</div><div class="kpi-value" id="k-saldo">—</div><div class="kpi-sub">Efectivo disponible</div></div>
+  </div>
+
+  <div class="alert warn" id="flujo-alert" style="display:none">
+    ⚠️ <div id="flujo-alert-msg"></div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-flujo')">🖨️ Imprimir</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;">
+    <div class="card">
+      <div class="card-title"><span>📋</span> Detalle del Flujo de Caja</div>
+      <table class="stmt-table">
+        <tbody id="flujo-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📊</span> Distribución del Flujo</div>
+      <div style="height:260px;position:relative"><canvas id="ch-flujo"></canvas></div>
+      <div class="progress-row" id="flujo-bars" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
+<div id="page-balance" class="page">
+  <div class="page-header">
+    <h2>🏛 Balance General</h2>
+    <p>Al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi t"><div class="kpi-icon">📦</div><div class="kpi-label">Total Activos</div><div class="kpi-value" id="k-act">—</div></div>
+    <div class="kpi r"><div class="kpi-icon">📉</div><div class="kpi-label">Total Pasivos</div><div class="kpi-value" id="k-pas">—</div></div>
+    <div class="kpi g"><div class="kpi-icon">💚</div><div class="kpi-label">Patrimonio</div><div class="kpi-value" id="k-pat">—</div></div>
+    <div class="kpi a"><div class="kpi-icon">⚖️</div><div class="kpi-label">Verificación</div><div class="kpi-value" id="k-ver">—</div></div>
+  </div>
+
+  <div class="balance-check" id="balance-check-banner">⏳ Calculando...</div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-balance')">🖨️ Imprimir</button>
+  </div>
+
+  <div class="balance-grid">
+    <div class="card">
+      <div class="card-title"><span>📦</span> ACTIVOS</div>
+      <table class="stmt-table"><tbody id="activos-body"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📉</span> PASIVOS Y PATRIMONIO</div>
+      <table class="stmt-table"><tbody id="pasivos-body"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📊</span> Estructura Patrimonial</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;">
+      <div style="height:280px;position:relative"><canvas id="ch-balance"></canvas></div>
+      <div id="balance-breakdown"></div>
+    </div>
+  </div>
+</div>
+<div id="page-dashboard" class="page">
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+    <div>
+      <h2>📐 Dashboard de Ratios Financieros</h2>
+      <p>Análisis integral para toma de decisiones — Ejercicio 2024</p>
+    </div>
+    <button class="btn-primary" style="flex-shrink:0;margin-top:4px;background:linear-gradient(135deg,#0B1F3A,#EF4444);display:flex;align-items:center;gap:8px;" onclick="exportarPDF()" id="btn-pdf">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Exportar PDF
+    </button>
+  </div>
+
+  <!-- ALERT SUMMARY -->
+  <div id="dash-alerts"></div>
+
+  <!-- RATIO KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" id="ratio-kpis">
+  </div>
+
+  <!-- CHARTS 4-GRID -->
+  <div class="charts-grid-2">
+    <div class="chart-box">
+      <h3>📊 Ratios vs. Benchmark</h3>
+      <div class="chart-desc">Valores actuales comparados con mínimos recomendados por análisis financiero</div>
+      <div class="chart-wrap"><canvas id="ch-ratios-bar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🕸 Perfil de Salud Financiera</h3>
+      <div class="chart-desc">Mapa radial de las dimensiones financieras clave (escala 0–100)</div>
+      <div class="chart-wrap"><canvas id="ch-radar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🥧 Estructura de Costos vs. Utilidad</h3>
+      <div class="chart-desc">Proporción de costos, impuestos y utilidad sobre ingresos totales</div>
+      <div class="chart-wrap"><canvas id="ch-costos-pie"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>📈 Cascada Financiera</h3>
+      <div class="chart-desc">Desde ingresos brutos hasta utilidad neta paso a paso</div>
+      <div class="chart-wrap"><canvas id="ch-waterfall"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RATIO TABLE -->
+  <div class="card">
+    <div class="card-title"><span>📐</span> Tabla Analítica de Ratios — Guía para Decisiones</div>
+    <table class="ratio-table">
+      <thead>
+        <tr>
+          <th>Ratio Financiero</th>
+          <th>Valor Actual</th>
+          <th>Benchmark</th>
+          <th>Estado</th>
+          <th>Interpretación y Acción Recomendada</th>
+        </tr>
+      </thead>
+      <tbody id="ratio-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- RECOMENDACIONES -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Recomendaciones Estratégicas</div>
+    <div id="recomendaciones" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
+  </div>
+</div>
+<div id="page-ajustes" class="page">
+  <div class="page-header">
+    <h2>⚙️ Ajustes — Gestión de Cuentas</h2>
+    <p>Administra los usuarios del sistema, sus contraseñas y niveles de acceso.</p>
+  </div>
+
+  <!-- VIEWER BLOCKER (solo visible si el usuario actual es viewer) -->
+  <div id="ajustes-blocked" style="display:none;background:#FEF2F2;border:1.5px solid #FECACA;
+       border-radius:12px;padding:28px;text-align:center;margin-bottom:20px">
+    <div style="font-size:2.5rem;margin-bottom:10px">🔒</div>
+    <div style="font-size:1rem;font-weight:700;color:#991B1B">Acceso restringido</div>
+    <div style="font-size:.82rem;color:#B91C1C;margin-top:6px">Tu cuenta tiene permisos de <strong>Solo Lectura</strong>. Contacta al administrador para gestionar usuarios.</div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="ajustes-panel">
+
+    <!-- CUENTA ADMIN (fija) -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><span>👑</span> Cuenta Administrador (predeterminada)</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+                  background:#F0F9FF;border:1px solid #BAE6FD;border-radius:10px;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#10B981);
+                      display:grid;place-items:center;font-size:1.3rem;flex-shrink:0">👑</div>
+          <div>
+            <div style="font-weight:700;color:#0B1F3A;font-size:.9rem">Admin</div>
+            <div style="font-size:.72rem;color:#64748B;margin-top:2px">
+              <span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:20px;font-weight:700;font-size:.65rem">EDITOR</span>
+              &nbsp;· Cuenta principal del sistema
+            </div>
+          </div>
+        </div>
+        <button class="btn-secondary" style="font-size:.78rem;padding:7px 14px" onclick="openAdminPassModal()">
+          🔑 Cambiar Contraseña
+        </button>
+      </div>
+    </div>
+
+    <!-- USUARIOS REGISTRADOS -->
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span><span>👥</span> Usuarios Registrados</span>
+        <span id="ajustes-counter" style="font-size:.72rem;font-weight:600;color:#64748B;
+              background:#F1F5F9;padding:3px 12px;border-radius:20px;border:1px solid #E2E8F0">0 / 5</span>
+      </div>
+
+      <div id="ajustes-empty" style="text-align:center;padding:32px;color:#94A3B8;font-size:.85rem">
+        <div style="font-size:2rem;margin-bottom:8px">👤</div>
+        No hay usuarios registrados aún.<br>
+        <span style="font-size:.75rem">Usa el botón <strong>"Registrarse"</strong> en el login para agregar usuarios.</span>
+      </div>
+
+      <div id="ajustes-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+  </div><!-- /ajustes-panel -->
+</div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+<!-- MODAL: Cambiar contraseña Admin -->
+<div class="modal-overlay" id="modal-admin-pass">
+  <div class="modal-box" style="max-width:400px">
+    <h3>🔑 Cambiar Contraseña — Admin</h3>
+    <p>Ingresa la contraseña actual y la nueva contraseña para continuar.</p>
+    <label class="login-label" style="margin-top:14px">Contraseña actual</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="adm-pass-old" placeholder="Contraseña actual">
+    </div>
+    <label class="login-label" style="margin-top:14px">Nueva contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔑</span>
+      <input class="login-input" type="password" id="adm-pass-new" placeholder="Mínimo 6 caracteres">
+    </div>
+    <label class="login-label" style="margin-top:14px">Confirmar nueva contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✅</span>
+      <input class="login-input" type="password" id="adm-pass-confirm" placeholder="Repite la nueva contraseña">
+    </div>
+    <div id="adm-pass-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;
+         background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAdminPassModal()">Cancelar</button>
+      <button class="btn-modal-send" onclick="saveAdminPass()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Gestionar usuario registrado -->
+<div class="modal-overlay" id="modal-manage-user">
+  <div class="modal-box" style="max-width:440px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#8B5CF6);
+                  display:grid;place-items:center;font-size:1.4rem;flex-shrink:0" id="mu-avatar">👤</div>
+      <div>
+        <div style="font-weight:700;font-size:1rem;color:#0B1F3A" id="mu-nombre">—</div>
+        <div style="font-size:.75rem;color:#94A3B8" id="mu-meta">—</div>
+      </div>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#64748B;margin-bottom:10px">🔑 Cambiar Contraseña</div>
+      <div class="login-input-wrap" style="margin-bottom:8px">
+        <span class="login-icon">🔑</span>
+        <input class="login-input" type="password" id="mu-pass-new" placeholder="Nueva contraseña (mín. 6 car.)">
+      </div>
+      <div class="login-input-wrap">
+        <span class="login-icon">✅</span>
+        <input class="login-input" type="password" id="mu-pass-confirm" placeholder="Confirmar contraseña">
+      </div>
+      <button onclick="saveUserPass()" style="margin-top:10px;width:100%;padding:8px;border-radius:8px;
+              background:#0EA5C9;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        💾 Actualizar Contraseña
+      </button>
+    </div>
+
+    <!-- Resetear contraseña -->
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#92400E;margin-bottom:6px">🔄 Resetear Contraseña</div>
+      <div style="font-size:.77rem;color:#78350F;margin-bottom:10px">
+        Restablece la contraseña a: <code style="background:#FEF3C7;padding:2px 6px;border-radius:4px;font-weight:700">reset1234</code>
+      </div>
+      <button onclick="resetUserPass()" style="width:100%;padding:8px;border-radius:8px;
+              background:#F59E0B;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        🔄 Resetear a "reset1234"
+      </button>
+    </div>
+
+    <!-- Cambiar rol -->
+    <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#166534;margin-bottom:10px">🎭 Nivel de Acceso</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button id="role-btn-editor" onclick="setUserRole('editor')"
+          style="padding:10px 8px;border-radius:8px;border:2px solid #E2E8F0;
+                 font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;
+                 transition:all .2s;background:#fff;color:#64748B">
+          ✏️ Editor<br><span style="font-size:.68rem;font-weight:400">Puede editar todo</span>
+        </button>
+        <button id="role-btn-viewer" onclick="setUserRole('viewer')"
+          style="padding:10px 8px;border-radius:8px;border:2px solid #E2E8F0;
+                 font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;
+                 transition:all .2s;background:#fff;color:#64748B">
+          👁 Solo Lectura<br><span style="font-size:.68rem;font-weight:400">Ve e imprime</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Eliminar -->
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:14px;margin-bottom:4px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#991B1B;margin-bottom:6px">🗑 Zona de Peligro</div>
+      <button onclick="deleteUserFromAjustes()" style="width:100%;padding:8px;border-radius:8px;
+              background:#EF4444;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        🗑 Eliminar esta cuenta
+      </button>
+    </div>
+
+    <div id="mu-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;
+         background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn-modal-cancel" style="flex:unset;width:100%" onclick="closeManageUser()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/pdf.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/calculations.js"></script>
+<script src="assets/js/reports-resultados.js"></script>
+<script src="assets/js/reports-flujo.js"></script>
+<script src="assets/js/reports-balance.js"></script>
+<script src="assets/js/reports-dashboard.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

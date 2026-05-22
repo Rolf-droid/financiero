@@ -1,0 +1,158 @@
+<div id="page-datos" class="page active">
+  <div class="page-header">
+    <h2>📝 Ingreso de Datos Financieros</h2>
+    <p>Ingresa los valores del período. Los informes se calcularán automáticamente.</p>
+  </div>
+
+  <div class="alert info">
+    💡 <div>Los campos en <strong>azul</strong> son modificables. Todos los cálculos se actualizan en tiempo real. Haz clic en <strong>"Actualizar"</strong> o presiona <strong>Tab</strong> entre campos para refrescar los resultados.</div>
+  </div>
+
+  <!-- INGRESOS Y COSTOS -->
+  <div class="card">
+    <div class="card-title"><span>💰</span> Ingresos y Costos Operacionales</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Ventas de Mercadería (S/)</label>
+        <input class="input-blue" type="number" id="ventas" value="30000" oninput="calcularTodo()">
+        <span class="form-hint">Ingresos por venta de productos</span>
+      </div>
+      <div class="form-group">
+        <label>Prestación de Servicios (S/)</label>
+        <input class="input-blue" type="number" id="servicios" value="1500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otros Ingresos (S/)</label>
+        <input class="input-blue" type="number" id="otros_ing" value="100" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Costo de Ventas (S/)</label>
+        <input class="input-blue" type="number" id="costo_ventas" value="200" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos de Ventas (S/)</label>
+        <input class="input-blue" type="number" id="gs_ventas" value="60" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos Administrativos (S/)</label>
+        <input class="input-blue" type="number" id="gs_admin" value="600" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos Financieros (S/)</label>
+        <input class="input-blue" type="number" id="gs_fin" value="300" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Depreciación (S/)</label>
+        <input class="input-blue" type="number" id="deprec" value="500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Tasa Impuesto Renta (%)</label>
+        <input class="input-blue" type="number" id="tasa_ir" value="29.5" step="0.1" oninput="calcularTodo()">
+        <span class="form-hint">Por defecto: 29.5%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUJO DE CAJA -->
+  <div class="card">
+    <div class="card-title"><span>💸</span> Flujo de Caja</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cobranzas a Clientes (S/)</label>
+        <input class="input-blue" type="number" id="cobranzas" value="45000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos a Proveedores (S/)</label>
+        <input class="input-blue" type="number" id="pag_prov" value="30000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos de Planillas (S/)</label>
+        <input class="input-blue" type="number" id="pag_plan" value="15000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos de Tributos (S/)</label>
+        <input class="input-blue" type="number" id="pag_trib" value="12500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Compra de Activos Fijos (S/)</label>
+        <input class="input-blue" type="number" id="compra_af" value="120" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Préstamos Recibidos (S/)</label>
+        <input class="input-blue" type="number" id="prestamos" value="450" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Amortización de Deudas (S/)</label>
+        <input class="input-blue" type="number" id="amort" value="45000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Saldo Inicial de Caja (S/)</label>
+        <input class="input-blue" type="number" id="saldo_ini" value="4600" oninput="calcularTodo()">
+      </div>
+    </div>
+  </div>
+
+  <!-- BALANCE: ACTIVOS -->
+  <div class="card">
+    <div class="card-title"><span>🏛</span> Balance General — Activos, Pasivos y Patrimonio</div>
+    <div class="section-divider">ACTIVO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Caja y Bancos (S/)</label>
+        <input class="input-blue" type="number" id="caja" value="1500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Cuentas por Cobrar (S/)</label>
+        <input class="input-blue" type="number" id="cxc" value="2500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Inventarios (S/)</label>
+        <input class="input-blue" type="number" id="inventarios" value="3500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">ACTIVO NO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Activos Fijos Netos (S/)</label>
+        <input class="input-blue" type="number" id="af_netos" value="4500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otros Activos (S/)</label>
+        <input class="input-blue" type="number" id="otros_act" value="5500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PASIVO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Cuentas por Pagar (S/)</label>
+        <input class="input-blue" type="number" id="cxp" value="6500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otras Deudas (S/)</label>
+        <input class="input-blue" type="number" id="otras_deudas" value="8500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PASIVO NO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Deudas a Largo Plazo (S/)</label>
+        <input class="input-blue" type="number" id="dlp" value="7500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PATRIMONIO</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Capital Social (S/)</label>
+        <input class="input-blue" type="number" id="capital" value="9500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Reservas (S/)</label>
+        <input class="input-blue" type="number" id="reservas" value="10000" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px;">
+      <button class="btn-primary" onclick="calcularTodo(); showToast('✅ Cálculos realizados correctamente','success')">⚡ Calcular Todo</button>
+      <button class="btn-secondary" onclick="restaurarEjemplo()">↩ Restaurar Ejemplo</button>
+    </div>
+  </div>
+</div>

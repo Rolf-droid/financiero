@@ -1,0 +1,38 @@
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">📊</div>
+      <h1>Comercial Andina S.A.C.</h1>
+      <p>Sistema de Reportes Financieros 2024</p>
+    </div>
+
+    <label class="login-label" for="login-user">Usuario</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">👤</span>
+      <input class="login-input" type="text" id="login-user" placeholder="Ej: Admin" autocomplete="username">
+    </div>
+
+    <label class="login-label" for="login-pass">Contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()">
+      <button class="login-show-btn" onclick="togglePass()" id="show-btn" title="Mostrar/ocultar">👁</button>
+    </div>
+
+    <a class="login-forgot" onclick="openForgot()">¿Olvidaste tu contraseña?</a>
+
+    <button class="login-btn" onclick="doLogin()">Iniciar Sesión →</button>
+
+    <button class="login-btn" style="margin-top:10px;background:linear-gradient(135deg,#1E3A5F,#10B981)" onclick="openRegister()">
+      👥 Registrarse
+    </button>
+
+    <div class="login-error" id="login-error">❌ Usuario o contraseña incorrectos. Inténtalo de nuevo.</div>
+
+    <div class="login-divider">— Acceso de demostración —</div>
+    <div class="login-demo-hint">
+      👤 <strong>Usuario:</strong> Admin &nbsp;&nbsp;🔒 <strong>Contraseña:</strong> andina2024
+    </div>
+  </div>
+</div>

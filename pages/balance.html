@@ -1,0 +1,38 @@
+<div id="page-balance" class="page">
+  <div class="page-header">
+    <h2>🏛 Balance General</h2>
+    <p>Al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi t"><div class="kpi-icon">📦</div><div class="kpi-label">Total Activos</div><div class="kpi-value" id="k-act">—</div></div>
+    <div class="kpi r"><div class="kpi-icon">📉</div><div class="kpi-label">Total Pasivos</div><div class="kpi-value" id="k-pas">—</div></div>
+    <div class="kpi g"><div class="kpi-icon">💚</div><div class="kpi-label">Patrimonio</div><div class="kpi-value" id="k-pat">—</div></div>
+    <div class="kpi a"><div class="kpi-icon">⚖️</div><div class="kpi-label">Verificación</div><div class="kpi-value" id="k-ver">—</div></div>
+  </div>
+
+  <div class="balance-check" id="balance-check-banner">⏳ Calculando...</div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-balance')">🖨️ Imprimir</button>
+  </div>
+
+  <div class="balance-grid">
+    <div class="card">
+      <div class="card-title"><span>📦</span> ACTIVOS</div>
+      <table class="stmt-table"><tbody id="activos-body"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📉</span> PASIVOS Y PATRIMONIO</div>
+      <table class="stmt-table"><tbody id="pasivos-body"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📊</span> Estructura Patrimonial</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;">
+      <div style="height:280px;position:relative"><canvas id="ch-balance"></canvas></div>
+      <div id="balance-breakdown"></div>
+    </div>
+  </div>
+</div>

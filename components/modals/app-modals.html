@@ -1,0 +1,113 @@
+<!-- MODAL: Cambiar contraseña Admin -->
+<div class="modal-overlay" id="modal-admin-pass">
+  <div class="modal-box" style="max-width:400px">
+    <h3>🔑 Cambiar Contraseña — Admin</h3>
+    <p>Ingresa la contraseña actual y la nueva contraseña para continuar.</p>
+    <label class="login-label" style="margin-top:14px">Contraseña actual</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="adm-pass-old" placeholder="Contraseña actual">
+    </div>
+    <label class="login-label" style="margin-top:14px">Nueva contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔑</span>
+      <input class="login-input" type="password" id="adm-pass-new" placeholder="Mínimo 6 caracteres">
+    </div>
+    <label class="login-label" style="margin-top:14px">Confirmar nueva contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✅</span>
+      <input class="login-input" type="password" id="adm-pass-confirm" placeholder="Repite la nueva contraseña">
+    </div>
+    <div id="adm-pass-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;
+         background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAdminPassModal()">Cancelar</button>
+      <button class="btn-modal-send" onclick="saveAdminPass()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Gestionar usuario registrado -->
+<div class="modal-overlay" id="modal-manage-user">
+  <div class="modal-box" style="max-width:440px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#8B5CF6);
+                  display:grid;place-items:center;font-size:1.4rem;flex-shrink:0" id="mu-avatar">👤</div>
+      <div>
+        <div style="font-weight:700;font-size:1rem;color:#0B1F3A" id="mu-nombre">—</div>
+        <div style="font-size:.75rem;color:#94A3B8" id="mu-meta">—</div>
+      </div>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#64748B;margin-bottom:10px">🔑 Cambiar Contraseña</div>
+      <div class="login-input-wrap" style="margin-bottom:8px">
+        <span class="login-icon">🔑</span>
+        <input class="login-input" type="password" id="mu-pass-new" placeholder="Nueva contraseña (mín. 6 car.)">
+      </div>
+      <div class="login-input-wrap">
+        <span class="login-icon">✅</span>
+        <input class="login-input" type="password" id="mu-pass-confirm" placeholder="Confirmar contraseña">
+      </div>
+      <button onclick="saveUserPass()" style="margin-top:10px;width:100%;padding:8px;border-radius:8px;
+              background:#0EA5C9;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        💾 Actualizar Contraseña
+      </button>
+    </div>
+
+    <!-- Resetear contraseña -->
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#92400E;margin-bottom:6px">🔄 Resetear Contraseña</div>
+      <div style="font-size:.77rem;color:#78350F;margin-bottom:10px">
+        Restablece la contraseña a: <code style="background:#FEF3C7;padding:2px 6px;border-radius:4px;font-weight:700">reset1234</code>
+      </div>
+      <button onclick="resetUserPass()" style="width:100%;padding:8px;border-radius:8px;
+              background:#F59E0B;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        🔄 Resetear a "reset1234"
+      </button>
+    </div>
+
+    <!-- Cambiar rol -->
+    <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#166534;margin-bottom:10px">🎭 Nivel de Acceso</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button id="role-btn-editor" onclick="setUserRole('editor')"
+          style="padding:10px 8px;border-radius:8px;border:2px solid #E2E8F0;
+                 font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;
+                 transition:all .2s;background:#fff;color:#64748B">
+          ✏️ Editor<br><span style="font-size:.68rem;font-weight:400">Puede editar todo</span>
+        </button>
+        <button id="role-btn-viewer" onclick="setUserRole('viewer')"
+          style="padding:10px 8px;border-radius:8px;border:2px solid #E2E8F0;
+                 font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;
+                 transition:all .2s;background:#fff;color:#64748B">
+          👁 Solo Lectura<br><span style="font-size:.68rem;font-weight:400">Ve e imprime</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Eliminar -->
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:14px;margin-bottom:4px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#991B1B;margin-bottom:6px">🗑 Zona de Peligro</div>
+      <button onclick="deleteUserFromAjustes()" style="width:100%;padding:8px;border-radius:8px;
+              background:#EF4444;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        🗑 Eliminar esta cuenta
+      </button>
+    </div>
+
+    <div id="mu-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;
+         background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn-modal-cancel" style="flex:unset;width:100%" onclick="closeManageUser()">Cerrar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div id="page-resultados" class="page">
+  <div class="page-header">
+    <h2>📈 Estado de Resultados Integrales</h2>
+    <p>Del 01 de enero al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip" id="er-kpis">
+    <div class="kpi t"><div class="kpi-icon">💰</div><div class="kpi-label">Total Ingresos</div><div class="kpi-value" id="k-ing">—</div><div class="kpi-sub">Ventas + Servicios + Otros</div></div>
+    <div class="kpi g"><div class="kpi-icon">📊</div><div class="kpi-label">Utilidad Bruta</div><div class="kpi-value" id="k-bruta">—</div><div class="kpi-sub">Ingresos − Costo Ventas</div></div>
+    <div class="kpi a"><div class="kpi-icon">⚙️</div><div class="kpi-label">EBIT</div><div class="kpi-value" id="k-ebit">—</div><div class="kpi-sub">Utilidad Operativa</div></div>
+    <div class="kpi g"><div class="kpi-icon">🏆</div><div class="kpi-label">Utilidad Neta</div><div class="kpi-value" id="k-neta">—</div><div class="kpi-sub">Después de impuestos</div></div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-resultados')">🖨️ Imprimir</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📋</span> Detalle del Estado de Resultados</div>
+    <table class="stmt-table">
+      <tbody id="er-body"></tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid-2">
+    <div class="chart-box">
+      <h3>📊 Composición de Ingresos</h3>
+      <div class="chart-desc">Desglose por fuente de ingreso</div>
+      <div class="chart-wrap"><canvas id="ch-ingresos"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🎯 Cascada de Resultados</h3>
+      <div class="chart-desc">Ingresos → Costos → Utilidades</div>
+      <div class="chart-wrap"><canvas id="ch-cascade"></canvas></div>
+    </div>
+  </div>
+</div>

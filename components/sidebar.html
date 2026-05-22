@@ -1,0 +1,50 @@
+<div class="layout">
+
+<!-- ════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">📊</div>
+    <div class="brand-name">Comercial Andina</div>
+    <div class="brand-sub">Sistema Financiero 2024</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Módulos</div>
+    <button class="nav-item active" onclick="showPage('datos')">
+      <span class="nav-icon">📝</span>
+      <span class="nav-text">Ingreso de Datos</span>
+    </button>
+    <button class="nav-item" onclick="showPage('resultados')">
+      <span class="nav-icon">📈</span>
+      <span class="nav-text">Estado de Resultados</span>
+    </button>
+    <button class="nav-item" onclick="showPage('flujo')">
+      <span class="nav-icon">💸</span>
+      <span class="nav-text">Flujo de Caja</span>
+    </button>
+    <button class="nav-item" onclick="showPage('balance')">
+      <span class="nav-icon">🏛</span>
+      <span class="nav-text">Balance General</span>
+    </button>
+    <button class="nav-item" onclick="showPage('dashboard')">
+      <span class="nav-icon">📐</span>
+      <span class="nav-text">Dashboard & Ratios</span>
+    </button>
+    <button class="nav-item" onclick="showPage('ajustes')" id="nav-ajustes">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-text">Ajustes</span>
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div id="clock-side"></div>
+    <div style="margin-top:6px;display:flex;align-items:center;gap:6px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#10B981;flex-shrink:0"></span>
+      <span style="color:#94A3B8;font-size:.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sidebar-user-label">—</span>
+    </div>
+    <div style="margin-top:2px;color:#475569;font-size:.62rem" id="sidebar-role-label"></div>
+    <div style="margin-top:3px;color:#475569;font-size:.65rem">Soles (S/) · Ej. 2024</div>
+  </div>
+</aside>

@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<!-- Versión monolítica (respaldo). Usa index.html para la versión modular del proyecto. -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Financiero | Comercial Andina S.A.C.</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --navy:    #0B1F3A;
+  --navy2:   #152D4E;
+  --teal:    #0EA5C9;
+  --teal2:   #67E8F9;
+  --green:   #10B981;
+  --green2:  #6EE7B7;
+  --amber:   #F59E0B;
+  --amber2:  #FDE68A;
+  --red:     #EF4444;
+  --red2:    #FCA5A5;
+  --purple:  #8B5CF6;
+  --slate:   #64748B;
+  --slate2:  #94A3B8;
+  --bg:      #F1F5F9;
+  --card:    #FFFFFF;
+  --border:  #E2E8F0;
+  --text:    #1E293B;
+  --muted:   #64748B;
+  --r:       12px;
+  --sh:      0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.08);
+  --sh2:     0 8px 32px rgba(11,31,58,.18);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR NAV
+═══════════════════════════════════════════════ */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 240px; min-width: 240px;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 200; overflow: hidden;
+  transition: width .3s;
+}
+
+.sidebar-brand {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.brand-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal), var(--green));
+  display: grid; place-items: center; font-size: 18px;
+  margin-bottom: 10px;
+}
+.brand-name { color: #fff; font-size: .95rem; font-weight: 700; line-height: 1.3; }
+.brand-sub  { color: var(--slate2); font-size: .7rem; margin-top: 2px; }
+
+.nav-section { padding: 16px 12px 8px; }
+.nav-label {
+  color: var(--slate2); font-size: .65rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  padding: 0 8px; margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  color: var(--slate2); font-size: .82rem; font-weight: 500;
+  cursor: pointer; transition: all .2s; margin-bottom: 2px;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+.nav-item.active { background: rgba(14,165,201,.18); color: var(--teal2); }
+.nav-item .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-item .nav-badge {
+  margin-left: auto; background: var(--red); color: #fff;
+  font-size: .6rem; font-weight: 700; padding: 1px 6px; border-radius: 20px;
+}
+
+.sidebar-footer {
+  margin-top: auto; padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  color: var(--slate2); font-size: .7rem;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════ */
+.main {
+  margin-left: 240px; flex: 1;
+  display: flex; flex-direction: column;
+}
+
+.topbar {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 14px 28px; display: flex; align-items: center;
+  justify-content: space-between; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.topbar-title { font-size: 1rem; font-weight: 700; color: var(--navy); }
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+.chip {
+  background: var(--bg); color: var(--slate); font-size: .72rem; font-weight: 600;
+  padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
+}
+.chip.good { background: #DCFCE7; color: #166534; border-color: #86EFAC; }
+.chip.bad  { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
+.btn-save {
+  background: var(--teal); color: #fff; font-family: 'DM Sans',sans-serif;
+  font-size: .78rem; font-weight: 600; padding: 7px 16px; border-radius: 8px;
+  border: none; cursor: pointer; transition: background .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-save:hover { background: #0891b2; }
+
+.content { padding: 28px; flex: 1; }
+
+/* ═══════════════════════════════════════════════
+   SECTION PAGES
+═══════════════════════════════════════════════ */
+.page { display: none; animation: fadeIn .3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+.page-header { margin-bottom: 24px; }
+.page-header h2 { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+.page-header p  { color: var(--muted); font-size: .83rem; margin-top: 4px; }
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.card {
+  background: var(--card); border-radius: var(--r);
+  box-shadow: var(--sh); padding: 22px; margin-bottom: 20px;
+}
+.card-title {
+  font-size: .85rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.card-title span { font-size: 1rem; }
+
+/* ═══════════════════════════════════════════════
+   FORM GRID
+═══════════════════════════════════════════════ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label {
+  font-size: .72rem; font-weight: 600; color: var(--slate);
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.form-group input {
+  font-family: 'DM Mono', monospace; font-size: .88rem;
+  padding: 9px 12px; border: 1.5px solid var(--border);
+  border-radius: 8px; color: var(--navy); background: #FAFBFC;
+  transition: border-color .2s, box-shadow .2s; outline: none;
+}
+.form-group input:focus {
+  border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,165,201,.15);
+  background: #fff;
+}
+.form-group input.input-blue { color: #2563EB; font-weight: 500; }
+.form-hint { font-size: .68rem; color: var(--slate2); }
+
+.section-divider {
+  font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--slate2);
+  padding: 10px 0 4px; border-top: 1px solid var(--border); margin-top: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal), #0284C7);
+  color: #fff; font-family: 'DM Sans',sans-serif;
+  font-size: .85rem; font-weight: 600;
+  padding: 11px 28px; border-radius: 9px; border: none;
+  cursor: pointer; transition: opacity .2s, transform .15s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { opacity: .92; transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg); color: var(--slate); font-family: 'DM Sans',sans-serif;
+  font-size: .85rem; font-weight: 600;
+  padding: 11px 22px; border-radius: 9px; border: 1.5px solid var(--border);
+  cursor: pointer; transition: background .2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ═══════════════════════════════════════════════
+   KPI STRIP
+═══════════════════════════════════════════════ */
+.kpi-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.kpi {
+  background: var(--card); border-radius: var(--r);
+  padding: 18px 20px; box-shadow: var(--sh);
+  border-left: 4px solid transparent;
+  transition: transform .2s, box-shadow .2s;
+}
+.kpi:hover { transform: translateY(-2px); box-shadow: var(--sh2); }
+.kpi.t { border-color: var(--teal);   }
+.kpi.g { border-color: var(--green);  }
+.kpi.a { border-color: var(--amber);  }
+.kpi.r { border-color: var(--red);    }
+.kpi.p { border-color: var(--purple); }
+.kpi-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.kpi-label { font-size: .68rem; font-weight: 600; color: var(--slate2); text-transform: uppercase; letter-spacing: .06em; }
+.kpi-value { font-size: 1.45rem; font-weight: 700; margin-top: 3px; font-family: 'DM Mono', monospace; }
+.kpi.t .kpi-value { color: var(--teal);   }
+.kpi.g .kpi-value { color: var(--green);  }
+.kpi.a .kpi-value { color: var(--amber);  }
+.kpi.r .kpi-value { color: var(--red);    }
+.kpi.p .kpi-value { color: var(--purple); }
+.kpi-sub { font-size: .7rem; color: var(--slate2); margin-top: 3px; }
+
+/* ═══════════════════════════════════════════════
+   FINANCIAL STATEMENT TABLE
+═══════════════════════════════════════════════ */
+.stmt-table { width: 100%; border-collapse: collapse; }
+.stmt-table tr { border-bottom: 1px solid #F1F5F9; transition: background .15s; }
+.stmt-table tr:hover { background: #F8FAFC; }
+.stmt-table td { padding: 9px 12px; font-size: .82rem; }
+.stmt-table td:last-child { text-align: right; font-family: 'DM Mono',monospace; font-weight: 500; }
+.stmt-table .row-header td {
+  font-weight: 700; color: var(--navy); background: #F8FAFC;
+  font-size: .78rem; text-transform: uppercase; letter-spacing: .05em;
+  padding: 12px 12px 6px;
+}
+.stmt-table .row-total td {
+  font-weight: 700; font-size: .88rem; border-top: 2px solid var(--navy);
+  color: var(--navy); background: var(--bg);
+}
+.stmt-table .row-sub td:first-child { padding-left: 28px; color: var(--muted); }
+.stmt-table .row-neg td:last-child { color: var(--red); }
+.stmt-table .row-pos td:last-child { color: var(--green); }
+.stmt-table .row-hl td { background: linear-gradient(90deg,#EFF6FF,#F0FDF4); font-weight: 700; }
+
+/* ═══════════════════════════════════════════════
+   BALANCE LAYOUT
+═══════════════════════════════════════════════ */
+.balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.balance-check {
+  margin-top: 16px; padding: 14px 18px; border-radius: 10px;
+  font-weight: 600; font-size: .85rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.balance-check.ok  { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+.balance-check.err { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+
+/* ═══════════════════════════════════════════════
+   CHARTS
+═══════════════════════════════════════════════ */
+.charts-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.charts-grid-1 { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+.chart-box { background: var(--card); border-radius: var(--r); padding: 22px; box-shadow: var(--sh); }
+.chart-box h3 { font-size: .85rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.chart-box .chart-desc { font-size: .72rem; color: var(--muted); margin-bottom: 18px; }
+.chart-wrap { position: relative; height: 280px; }
+
+/* ═══════════════════════════════════════════════
+   RATIO TABLE
+═══════════════════════════════════════════════ */
+.ratio-table { width: 100%; border-collapse: collapse; }
+.ratio-table thead tr { background: var(--navy); }
+.ratio-table thead th {
+  color: #fff; padding: 11px 14px; font-size: .72rem;
+  font-weight: 600; text-align: left; letter-spacing: .04em;
+}
+.ratio-table thead th:nth-child(n+2) { text-align: center; }
+.ratio-table tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+.ratio-table tbody tr:hover { background: #F8FAFC; }
+.ratio-table tbody td { padding: 10px 14px; font-size: .8rem; vertical-align: middle; }
+.ratio-table tbody td:nth-child(2) {
+  font-family: 'DM Mono',monospace; font-size: .92rem;
+  font-weight: 700; text-align: center;
+}
+.ratio-table tbody td:nth-child(3) { text-align: center; color: var(--slate2); font-size: .75rem; }
+.ratio-table tbody td:nth-child(4) { text-align: center; }
+.ratio-table tbody td:nth-child(5) { font-size: .76rem; color: var(--muted); font-style: italic; }
+.pill {
+  display: inline-block; padding: 3px 11px; border-radius: 20px;
+  font-size: .7rem; font-weight: 700; white-space: nowrap;
+}
+.pill.ok   { background: #DCFCE7; color: #166534; }
+.pill.warn { background: #FEF3C7; color: #92400E; }
+.pill.bad  { background: #FEE2E2; color: #991B1B; }
+
+/* ═══════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════ */
+.tab-row { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab-btn {
+  padding: 7px 18px; border-radius: 20px; font-family: 'DM Sans',sans-serif;
+  font-size: .78rem; font-weight: 600; border: 1.5px solid var(--border);
+  background: var(--card); color: var(--muted); cursor: pointer; transition: all .2s;
+}
+.tab-btn:hover, .tab-btn.active {
+  background: var(--navy); color: #fff; border-color: var(--navy);
+}
+
+/* ═══════════════════════════════════════════════
+   ALERT BANNER
+═══════════════════════════════════════════════ */
+.alert {
+  padding: 12px 16px; border-radius: 9px; font-size: .8rem;
+  font-weight: 500; margin-bottom: 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.alert.info { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+.alert.warn { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+.alert.danger { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+
+/* ═══════════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════════ */
+.progress-row { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.prog-item { display: flex; flex-direction: column; gap: 4px; }
+.prog-label { display: flex; justify-content: space-between; font-size: .75rem; }
+.prog-label span:first-child { color: var(--navy); font-weight: 600; }
+.prog-label span:last-child  { color: var(--muted); font-family: 'DM Mono',monospace; font-size: .72rem; }
+.prog-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 999px; transition: width 1s ease; }
+
+/* ═══════════════════════════════════════════════
+   PRINT / EXPORT BUTTON
+═══════════════════════════════════════════════ */
+.export-bar {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-bottom: 16px;
+}
+.btn-export {
+  background: #fff; border: 1.5px solid var(--border);
+  color: var(--slate); font-family: 'DM Sans',sans-serif;
+  font-size: .78rem; font-weight: 600; padding: 7px 16px;
+  border-radius: 8px; cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-export:hover { background: var(--bg); border-color: var(--slate2); }
+
+/* ═══════════════════════════════════════════════
+   TOOLTIP PULSE
+═══════════════════════════════════════════════ */
+.live-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .68rem; color: var(--green); font-weight: 600;
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.5;transform:scale(1.4)}
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:1024px){
+  .form-grid { grid-template-columns: 1fr 1fr; }
+  .charts-grid-2 { grid-template-columns: 1fr; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:700px){
+  .sidebar { width:60px; }
+  .sidebar .brand-name, .sidebar .brand-sub,
+  .sidebar .nav-item span.nav-text, .sidebar .nav-label,
+  .sidebar .sidebar-footer { display:none; }
+  .main { margin-left:60px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .kpi-strip { grid-template-columns: 1fr; }
+  .balance-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════════════════════ */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0B1F3A 0%, #0EA5C9 60%, #10B981 100%);
+  overflow: hidden;
+}
+#login-screen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.login-card {
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,.97);
+  border-radius: 20px; padding: 44px 40px 36px;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.35);
+  animation: loginSlideIn .5s cubic-bezier(.22,1,.36,1);
+}
+@keyframes loginSlideIn {
+  from { opacity:0; transform:translateY(32px) scale(.97); }
+  to   { opacity:1; transform:none; }
+}
+.login-logo {
+  text-align: center; margin-bottom: 28px;
+}
+.login-logo-icon {
+  width: 60px; height: 60px; border-radius: 16px; margin: 0 auto 12px;
+  background: linear-gradient(135deg, #0EA5C9, #10B981);
+  display: grid; place-items: center; font-size: 26px;
+  box-shadow: 0 8px 24px rgba(14,165,201,.4);
+}
+.login-logo h1 { font-size: 1.2rem; font-weight: 800; color: #0B1F3A; }
+.login-logo p  { font-size: .75rem; color: #64748B; margin-top: 3px; }
+
+.login-label {
+  display: block; font-size: .7rem; font-weight: 700;
+  color: #64748B; text-transform: uppercase; letter-spacing: .07em;
+  margin-bottom: 6px; margin-top: 18px;
+}
+.login-input-wrap { position: relative; }
+.login-input {
+  width: 100%; padding: 11px 14px 11px 40px;
+  border: 1.5px solid #E2E8F0; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: .9rem; color: #1E293B;
+  background: #F8FAFC; outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.login-input:focus {
+  border-color: #0EA5C9; background: #fff;
+  box-shadow: 0 0 0 3px rgba(14,165,201,.15);
+}
+.login-icon {
+  position: absolute; left: 13px; top: 50%;
+  transform: translateY(-50%); font-size: 1rem; pointer-events: none;
+}
+.login-show-btn {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: .8rem;
+  color: #94A3B8; padding: 2px 4px; border-radius: 4px;
+  transition: color .2s;
+}
+.login-show-btn:hover { color: #0EA5C9; }
+.login-forgot {
+  display: block; text-align: right; font-size: .75rem;
+  color: #0EA5C9; margin-top: 6px; cursor: pointer;
+  text-decoration: none; font-weight: 600;
+  transition: color .2s;
+}
+.login-forgot:hover { color: #0284C7; }
+.login-btn {
+  width: 100%; margin-top: 24px; padding: 13px;
+  background: linear-gradient(135deg, #0B1F3A, #0EA5C9);
+  color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: .9rem; font-weight: 700; border: none;
+  border-radius: 10px; cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  letter-spacing: .02em;
+}
+.login-btn:hover { opacity: .93; transform: translateY(-1px); }
+.login-btn:active { transform: translateY(0); }
+.login-error {
+  margin-top: 12px; padding: 10px 14px; border-radius: 8px;
+  background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA;
+  font-size: .8rem; font-weight: 500; display: none;
+  animation: shake .3s ease;
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+.login-divider {
+  text-align: center; margin-top: 22px; font-size: .72rem; color: #94A3B8;
+}
+.login-demo-hint {
+  margin-top: 14px; padding: 10px 14px; border-radius: 8px;
+  background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;
+  font-size: .75rem; line-height: 1.5;
+}
+
+/* Modal de recuperación */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 16px; padding: 32px;
+  width: 100%; max-width: 380px; box-shadow: 0 24px 60px rgba(0,0,0,.3);
+  animation: loginSlideIn .3s ease;
+}
+.modal-box h3 { font-size: 1.1rem; font-weight: 700; color: #0B1F3A; margin-bottom: 6px; }
+.modal-box p  { font-size: .8rem; color: #64748B; margin-bottom: 20px; line-height: 1.5; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions button { flex: 1; padding: 10px; border-radius: 9px;
+  font-family: 'DM Sans',sans-serif; font-size: .83rem; font-weight: 600; cursor: pointer; }
+.btn-modal-cancel { background: #F1F5F9; color: #64748B; border: 1.5px solid #E2E8F0; }
+.btn-modal-send   { background: linear-gradient(135deg,#0B1F3A,#0EA5C9); color:#fff; border:none; }
+
+/* ═══════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+═══════════════════════════════════════════════ */
+#toast-container {
+  position: fixed; bottom: 28px; right: 28px;
+  z-index: 9998; display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; border-radius: 12px;
+  background: #fff; color: #1E293B;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  font-size: .84rem; font-weight: 500; min-width: 260px;
+  pointer-events: all; border-left: 4px solid var(--teal);
+  animation: toastIn .35s cubic-bezier(.22,1,.36,1);
+}
+.toast.success { border-color: #10B981; }
+.toast.info    { border-color: #0EA5C9; }
+.toast.warning { border-color: #F59E0B; }
+@keyframes toastIn {
+  from { opacity:0; transform:translateX(40px) scale(.95); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes toastOut {
+  to { opacity:0; transform:translateX(40px) scale(.95); }
+}
+.toast-icon { font-size: 1.2rem; flex-shrink: 0; }
+.toast-msg  { flex: 1; line-height: 1.4; }
+.toast-close {
+  background: none; border: none; cursor: pointer;
+  color: #94A3B8; font-size: .9rem; padding: 2px; border-radius: 4px;
+  transition: color .2s;
+}
+.toast-close:hover { color: #1E293B; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     TOAST CONTAINER
+════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ════════════════════════════════════
+     MODAL: OLVIDASTE TU CONTRASEÑA
+════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-forgot">
+  <div class="modal-box">
+    <h3>🔑 Recuperar Contraseña</h3>
+    <p>Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.</p>
+    <label class="login-label" for="forgot-email">Correo electrónico</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✉️</span>
+      <input class="login-input" type="email" id="forgot-email" placeholder="tucorreo@gmail.com">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeForgot()">Cancelar</button>
+      <button class="btn-modal-send" onclick="sendForgot()">📨 Enviar Instrucciones</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODAL: REGISTRARSE
+════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-register">
+  <div class="modal-box" style="max-width:460px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h3>👥 Registrar Usuario</h3>
+      <span id="reg-counter" style="font-size:.75rem;font-weight:600;color:#64748B;background:#F1F5F9;padding:4px 12px;border-radius:20px;border:1px solid #E2E8F0">0 / 5 usuarios</span>
+    </div>
+    <p>Completa los datos del nuevo usuario. Se permiten hasta <strong>5 usuarios</strong> registrados.</p>
+
+    <label class="login-label" for="reg-nombre">Nombre completo</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">👤</span>
+      <input class="login-input" type="text" id="reg-nombre" placeholder="Ej: Juan Pérez">
+    </div>
+
+    <label class="login-label" for="reg-user" style="margin-top:14px">Usuario (para iniciar sesión)</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🪪</span>
+      <input class="login-input" type="text" id="reg-user" placeholder="Ej: jperez">
+    </div>
+
+    <label class="login-label" for="reg-email" style="margin-top:14px">Correo electrónico</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✉️</span>
+      <input class="login-input" type="email" id="reg-email" placeholder="tucorreo@gmail.com">
+    </div>
+
+    <label class="login-label" for="reg-pass" style="margin-top:14px">Contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      <button class="login-show-btn" onclick="toggleRegPass()" id="reg-show-btn">👁</button>
+    </div>
+
+    <div id="reg-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+
+    <!-- Lista de usuarios registrados -->
+    <div id="reg-list-wrap" style="margin-top:18px;display:none">
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64748B;margin-bottom:8px">Usuarios registrados</div>
+      <div id="reg-list" style="display:flex;flex-direction:column;gap:6px;max-height:130px;overflow-y:auto"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeRegister()">Cerrar</button>
+      <button class="btn-modal-send" onclick="doRegister()" id="btn-do-register">✅ Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">📊</div>
+      <h1>Comercial Andina S.A.C.</h1>
+      <p>Sistema de Reportes Financieros 2024</p>
+    </div>
+
+    <label class="login-label" for="login-user">Usuario</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">👤</span>
+      <input class="login-input" type="text" id="login-user" placeholder="Ej: Admin" autocomplete="username">
+    </div>
+
+    <label class="login-label" for="login-pass">Contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()">
+      <button class="login-show-btn" onclick="togglePass()" id="show-btn" title="Mostrar/ocultar">👁</button>
+    </div>
+
+    <a class="login-forgot" onclick="openForgot()">¿Olvidaste tu contraseña?</a>
+
+    <button class="login-btn" onclick="doLogin()">Iniciar Sesión →</button>
+
+    <button class="login-btn" style="margin-top:10px;background:linear-gradient(135deg,#1E3A5F,#10B981)" onclick="openRegister()">
+      👥 Registrarse
+    </button>
+
+    <div class="login-error" id="login-error">❌ Usuario o contraseña incorrectos. Inténtalo de nuevo.</div>
+
+    <div class="login-divider">— Acceso de demostración —</div>
+    <div class="login-demo-hint">
+      👤 <strong>Usuario:</strong> Admin &nbsp;&nbsp;🔒 <strong>Contraseña:</strong> andina2024
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- ════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">📊</div>
+    <div class="brand-name">Comercial Andina</div>
+    <div class="brand-sub">Sistema Financiero 2024</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Módulos</div>
+    <button class="nav-item active" onclick="showPage('datos')">
+      <span class="nav-icon">📝</span>
+      <span class="nav-text">Ingreso de Datos</span>
+    </button>
+    <button class="nav-item" onclick="showPage('resultados')">
+      <span class="nav-icon">📈</span>
+      <span class="nav-text">Estado de Resultados</span>
+    </button>
+    <button class="nav-item" onclick="showPage('flujo')">
+      <span class="nav-icon">💸</span>
+      <span class="nav-text">Flujo de Caja</span>
+    </button>
+    <button class="nav-item" onclick="showPage('balance')">
+      <span class="nav-icon">🏛</span>
+      <span class="nav-text">Balance General</span>
+    </button>
+    <button class="nav-item" onclick="showPage('dashboard')">
+      <span class="nav-icon">📐</span>
+      <span class="nav-text">Dashboard & Ratios</span>
+    </button>
+    <button class="nav-item" onclick="showPage('ajustes')" id="nav-ajustes">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-text">Ajustes</span>
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div id="clock-side"></div>
+    <div style="margin-top:6px;display:flex;align-items:center;gap:6px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#10B981;flex-shrink:0"></span>
+      <span style="color:#94A3B8;font-size:.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sidebar-user-label">—</span>
+    </div>
+    <div style="margin-top:2px;color:#475569;font-size:.62rem" id="sidebar-role-label"></div>
+    <div style="margin-top:3px;color:#475569;font-size:.65rem">Soles (S/) · Ej. 2024</div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════
+     MAIN
+════════════════════════════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📝 Ingreso de Datos</div>
+    <div class="topbar-right">
+      <span class="live-badge"><span class="live-dot"></span>Cálculo en tiempo real</span>
+      <span class="chip" id="balance-chip">⏳ Ingresa datos</span>
+      <button class="btn-save" onclick="calcularTodo()">⚡ Actualizar</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+<!-- ════════════════════════════════════
+     PAGE 1: INGRESO DE DATOS
+════════════════════════════════════ -->
+<div id="page-datos" class="page active">
+  <div class="page-header">
+    <h2>📝 Ingreso de Datos Financieros</h2>
+    <p>Ingresa los valores del período. Los informes se calcularán automáticamente.</p>
+  </div>
+
+  <div class="alert info">
+    💡 <div>Los campos en <strong>azul</strong> son modificables. Todos los cálculos se actualizan en tiempo real. Haz clic en <strong>"Actualizar"</strong> o presiona <strong>Tab</strong> entre campos para refrescar los resultados.</div>
+  </div>
+
+  <!-- INGRESOS Y COSTOS -->
+  <div class="card">
+    <div class="card-title"><span>💰</span> Ingresos y Costos Operacionales</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Ventas de Mercadería (S/)</label>
+        <input class="input-blue" type="number" id="ventas" value="30000" oninput="calcularTodo()">
+        <span class="form-hint">Ingresos por venta de productos</span>
+      </div>
+      <div class="form-group">
+        <label>Prestación de Servicios (S/)</label>
+        <input class="input-blue" type="number" id="servicios" value="1500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otros Ingresos (S/)</label>
+        <input class="input-blue" type="number" id="otros_ing" value="100" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Costo de Ventas (S/)</label>
+        <input class="input-blue" type="number" id="costo_ventas" value="200" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos de Ventas (S/)</label>
+        <input class="input-blue" type="number" id="gs_ventas" value="60" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos Administrativos (S/)</label>
+        <input class="input-blue" type="number" id="gs_admin" value="600" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Gastos Financieros (S/)</label>
+        <input class="input-blue" type="number" id="gs_fin" value="300" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>(-) Depreciación (S/)</label>
+        <input class="input-blue" type="number" id="deprec" value="500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Tasa Impuesto Renta (%)</label>
+        <input class="input-blue" type="number" id="tasa_ir" value="29.5" step="0.1" oninput="calcularTodo()">
+        <span class="form-hint">Por defecto: 29.5%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUJO DE CAJA -->
+  <div class="card">
+    <div class="card-title"><span>💸</span> Flujo de Caja</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cobranzas a Clientes (S/)</label>
+        <input class="input-blue" type="number" id="cobranzas" value="45000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos a Proveedores (S/)</label>
+        <input class="input-blue" type="number" id="pag_prov" value="30000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos de Planillas (S/)</label>
+        <input class="input-blue" type="number" id="pag_plan" value="15000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Pagos de Tributos (S/)</label>
+        <input class="input-blue" type="number" id="pag_trib" value="12500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Compra de Activos Fijos (S/)</label>
+        <input class="input-blue" type="number" id="compra_af" value="120" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Préstamos Recibidos (S/)</label>
+        <input class="input-blue" type="number" id="prestamos" value="450" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Amortización de Deudas (S/)</label>
+        <input class="input-blue" type="number" id="amort" value="45000" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Saldo Inicial de Caja (S/)</label>
+        <input class="input-blue" type="number" id="saldo_ini" value="4600" oninput="calcularTodo()">
+      </div>
+    </div>
+  </div>
+
+  <!-- BALANCE: ACTIVOS -->
+  <div class="card">
+    <div class="card-title"><span>🏛</span> Balance General — Activos, Pasivos y Patrimonio</div>
+    <div class="section-divider">ACTIVO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Caja y Bancos (S/)</label>
+        <input class="input-blue" type="number" id="caja" value="1500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Cuentas por Cobrar (S/)</label>
+        <input class="input-blue" type="number" id="cxc" value="2500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Inventarios (S/)</label>
+        <input class="input-blue" type="number" id="inventarios" value="3500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">ACTIVO NO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Activos Fijos Netos (S/)</label>
+        <input class="input-blue" type="number" id="af_netos" value="4500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otros Activos (S/)</label>
+        <input class="input-blue" type="number" id="otros_act" value="5500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PASIVO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Cuentas por Pagar (S/)</label>
+        <input class="input-blue" type="number" id="cxp" value="6500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Otras Deudas (S/)</label>
+        <input class="input-blue" type="number" id="otras_deudas" value="8500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PASIVO NO CORRIENTE</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Deudas a Largo Plazo (S/)</label>
+        <input class="input-blue" type="number" id="dlp" value="7500" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div class="section-divider">PATRIMONIO</div>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="form-group">
+        <label>Capital Social (S/)</label>
+        <input class="input-blue" type="number" id="capital" value="9500" oninput="calcularTodo()">
+      </div>
+      <div class="form-group">
+        <label>Reservas (S/)</label>
+        <input class="input-blue" type="number" id="reservas" value="10000" oninput="calcularTodo()">
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px;">
+      <button class="btn-primary" onclick="calcularTodo(); showToast('✅ Cálculos realizados correctamente','success')">⚡ Calcular Todo</button>
+      <button class="btn-secondary" onclick="restaurarEjemplo()">↩ Restaurar Ejemplo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PAGE 2: ESTADO DE RESULTADOS
+════════════════════════════════════ -->
+<div id="page-resultados" class="page">
+  <div class="page-header">
+    <h2>📈 Estado de Resultados Integrales</h2>
+    <p>Del 01 de enero al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip" id="er-kpis">
+    <div class="kpi t"><div class="kpi-icon">💰</div><div class="kpi-label">Total Ingresos</div><div class="kpi-value" id="k-ing">—</div><div class="kpi-sub">Ventas + Servicios + Otros</div></div>
+    <div class="kpi g"><div class="kpi-icon">📊</div><div class="kpi-label">Utilidad Bruta</div><div class="kpi-value" id="k-bruta">—</div><div class="kpi-sub">Ingresos − Costo Ventas</div></div>
+    <div class="kpi a"><div class="kpi-icon">⚙️</div><div class="kpi-label">EBIT</div><div class="kpi-value" id="k-ebit">—</div><div class="kpi-sub">Utilidad Operativa</div></div>
+    <div class="kpi g"><div class="kpi-icon">🏆</div><div class="kpi-label">Utilidad Neta</div><div class="kpi-value" id="k-neta">—</div><div class="kpi-sub">Después de impuestos</div></div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-resultados')">🖨️ Imprimir</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📋</span> Detalle del Estado de Resultados</div>
+    <table class="stmt-table">
+      <tbody id="er-body"></tbody>
+    </table>
+  </div>
+
+  <div class="charts-grid-2">
+    <div class="chart-box">
+      <h3>📊 Composición de Ingresos</h3>
+      <div class="chart-desc">Desglose por fuente de ingreso</div>
+      <div class="chart-wrap"><canvas id="ch-ingresos"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🎯 Cascada de Resultados</h3>
+      <div class="chart-desc">Ingresos → Costos → Utilidades</div>
+      <div class="chart-wrap"><canvas id="ch-cascade"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PAGE 3: FLUJO DE CAJA
+════════════════════════════════════ -->
+<div id="page-flujo" class="page">
+  <div class="page-header">
+    <h2>💸 Estado de Flujo de Efectivo</h2>
+    <p>Del 01 de enero al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi t"><div class="kpi-icon">🔄</div><div class="kpi-label">Flujo Operación</div><div class="kpi-value" id="k-op">—</div><div class="kpi-sub">Actividades operativas</div></div>
+    <div class="kpi a"><div class="kpi-icon">🏗️</div><div class="kpi-label">Flujo Inversión</div><div class="kpi-value" id="k-inv">—</div><div class="kpi-sub">Compra de activos</div></div>
+    <div class="kpi p"><div class="kpi-icon">🏦</div><div class="kpi-label">Flujo Financ.</div><div class="kpi-value" id="k-fin">—</div><div class="kpi-sub">Préstamos y deudas</div></div>
+    <div class="kpi r"><div class="kpi-icon">💼</div><div class="kpi-label">Saldo Final</div><div class="kpi-value" id="k-saldo">—</div><div class="kpi-sub">Efectivo disponible</div></div>
+  </div>
+
+  <div class="alert warn" id="flujo-alert" style="display:none">
+    ⚠️ <div id="flujo-alert-msg"></div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-flujo')">🖨️ Imprimir</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;">
+    <div class="card">
+      <div class="card-title"><span>📋</span> Detalle del Flujo de Caja</div>
+      <table class="stmt-table">
+        <tbody id="flujo-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📊</span> Distribución del Flujo</div>
+      <div style="height:260px;position:relative"><canvas id="ch-flujo"></canvas></div>
+      <div class="progress-row" id="flujo-bars" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PAGE 4: BALANCE GENERAL
+════════════════════════════════════ -->
+<div id="page-balance" class="page">
+  <div class="page-header">
+    <h2>🏛 Balance General</h2>
+    <p>Al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi t"><div class="kpi-icon">📦</div><div class="kpi-label">Total Activos</div><div class="kpi-value" id="k-act">—</div></div>
+    <div class="kpi r"><div class="kpi-icon">📉</div><div class="kpi-label">Total Pasivos</div><div class="kpi-value" id="k-pas">—</div></div>
+    <div class="kpi g"><div class="kpi-icon">💚</div><div class="kpi-label">Patrimonio</div><div class="kpi-value" id="k-pat">—</div></div>
+    <div class="kpi a"><div class="kpi-icon">⚖️</div><div class="kpi-label">Verificación</div><div class="kpi-value" id="k-ver">—</div></div>
+  </div>
+
+  <div class="balance-check" id="balance-check-banner">⏳ Calculando...</div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-balance')">🖨️ Imprimir</button>
+  </div>
+
+  <div class="balance-grid">
+    <div class="card">
+      <div class="card-title"><span>📦</span> ACTIVOS</div>
+      <table class="stmt-table"><tbody id="activos-body"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📉</span> PASIVOS Y PATRIMONIO</div>
+      <table class="stmt-table"><tbody id="pasivos-body"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📊</span> Estructura Patrimonial</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;">
+      <div style="height:280px;position:relative"><canvas id="ch-balance"></canvas></div>
+      <div id="balance-breakdown"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PAGE 5: DASHBOARD & RATIOS
+════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+    <div>
+      <h2>📐 Dashboard de Ratios Financieros</h2>
+      <p>Análisis integral para toma de decisiones — Ejercicio 2024</p>
+    </div>
+    <button class="btn-primary" style="flex-shrink:0;margin-top:4px;background:linear-gradient(135deg,#0B1F3A,#EF4444);display:flex;align-items:center;gap:8px;" onclick="exportarPDF()" id="btn-pdf">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Exportar PDF
+    </button>
+  </div>
+
+  <!-- ALERT SUMMARY -->
+  <div id="dash-alerts"></div>
+
+  <!-- RATIO KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" id="ratio-kpis">
+  </div>
+
+  <!-- CHARTS 4-GRID -->
+  <div class="charts-grid-2">
+    <div class="chart-box">
+      <h3>📊 Ratios vs. Benchmark</h3>
+      <div class="chart-desc">Valores actuales comparados con mínimos recomendados por análisis financiero</div>
+      <div class="chart-wrap"><canvas id="ch-ratios-bar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🕸 Perfil de Salud Financiera</h3>
+      <div class="chart-desc">Mapa radial de las dimensiones financieras clave (escala 0–100)</div>
+      <div class="chart-wrap"><canvas id="ch-radar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🥧 Estructura de Costos vs. Utilidad</h3>
+      <div class="chart-desc">Proporción de costos, impuestos y utilidad sobre ingresos totales</div>
+      <div class="chart-wrap"><canvas id="ch-costos-pie"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>📈 Cascada Financiera</h3>
+      <div class="chart-desc">Desde ingresos brutos hasta utilidad neta paso a paso</div>
+      <div class="chart-wrap"><canvas id="ch-waterfall"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RATIO TABLE -->
+  <div class="card">
+    <div class="card-title"><span>📐</span> Tabla Analítica de Ratios — Guía para Decisiones</div>
+    <table class="ratio-table">
+      <thead>
+        <tr>
+          <th>Ratio Financiero</th>
+          <th>Valor Actual</th>
+          <th>Benchmark</th>
+          <th>Estado</th>
+          <th>Interpretación y Acción Recomendada</th>
+        </tr>
+      </thead>
+      <tbody id="ratio-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- RECOMENDACIONES -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Recomendaciones Estratégicas</div>
+    <div id="recomendaciones" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PAGE 6: AJUSTES
+════════════════════════════════════ -->
+<div id="page-ajustes" class="page">
+  <div class="page-header">
+    <h2>⚙️ Ajustes — Gestión de Cuentas</h2>
+    <p>Administra los usuarios del sistema, sus contraseñas y niveles de acceso.</p>
+  </div>
+
+  <!-- VIEWER BLOCKER (solo visible si el usuario actual es viewer) -->
+  <div id="ajustes-blocked" style="display:none;background:#FEF2F2;border:1.5px solid #FECACA;
+       border-radius:12px;padding:28px;text-align:center;margin-bottom:20px">
+    <div style="font-size:2.5rem;margin-bottom:10px">🔒</div>
+    <div style="font-size:1rem;font-weight:700;color:#991B1B">Acceso restringido</div>
+    <div style="font-size:.82rem;color:#B91C1C;margin-top:6px">Tu cuenta tiene permisos de <strong>Solo Lectura</strong>. Contacta al administrador para gestionar usuarios.</div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="ajustes-panel">
+
+    <!-- CUENTA ADMIN (fija) -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><span>👑</span> Cuenta Administrador (predeterminada)</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+                  background:#F0F9FF;border:1px solid #BAE6FD;border-radius:10px;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#10B981);
+                      display:grid;place-items:center;font-size:1.3rem;flex-shrink:0">👑</div>
+          <div>
+            <div style="font-weight:700;color:#0B1F3A;font-size:.9rem">Admin</div>
+            <div style="font-size:.72rem;color:#64748B;margin-top:2px">
+              <span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:20px;font-weight:700;font-size:.65rem">EDITOR</span>
+              &nbsp;· Cuenta principal del sistema
+            </div>
+          </div>
+        </div>
+        <button class="btn-secondary" style="font-size:.78rem;padding:7px 14px" onclick="openAdminPassModal()">
+          🔑 Cambiar Contraseña
+        </button>
+      </div>
+    </div>
+
+    <!-- USUARIOS REGISTRADOS -->
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span><span>👥</span> Usuarios Registrados</span>
+        <span id="ajustes-counter" style="font-size:.72rem;font-weight:600;color:#64748B;
+              background:#F1F5F9;padding:3px 12px;border-radius:20px;border:1px solid #E2E8F0">0 / 5</span>
+      </div>
+
+      <div id="ajustes-empty" style="text-align:center;padding:32px;color:#94A3B8;font-size:.85rem">
+        <div style="font-size:2rem;margin-bottom:8px">👤</div>
+        No hay usuarios registrados aún.<br>
+        <span style="font-size:.75rem">Usa el botón <strong>"Registrarse"</strong> en el login para agregar usuarios.</span>
+      </div>
+
+      <div id="ajustes-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+  </div><!-- /ajustes-panel -->
+</div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MODAL: Cambiar contraseña Admin -->
+<div class="modal-overlay" id="modal-admin-pass">
+  <div class="modal-box" style="max-width:400px">
+    <h3>🔑 Cambiar Contraseña — Admin</h3>
+    <p>Ingresa la contraseña actual y la nueva contraseña para continuar.</p>
+    <label class="login-label" style="margin-top:14px">Contraseña actual</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔒</span>
+      <input class="login-input" type="password" id="adm-pass-old" placeholder="Contraseña actual">
+    </div>
+    <label class="login-label" style="margin-top:14px">Nueva contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">🔑</span>
+      <input class="login-input" type="password" id="adm-pass-new" placeholder="Mínimo 6 caracteres">
+    </div>
+    <label class="login-label" style="margin-top:14px">Confirmar nueva contraseña</label>
+    <div class="login-input-wrap">
+      <span class="login-icon">✅</span>
+      <input class="login-input" type="password" id="adm-pass-confirm" placeholder="Repite la nueva contraseña">
+    </div>
+    <div id="adm-pass-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;
+         background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAdminPassModal()">Cancelar</button>
+      <button class="btn-modal-send" onclick="saveAdminPass()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Gestionar usuario registrado -->
+<div class="modal-overlay" id="modal-manage-user">
+  <div class="modal-box" style="max-width:440px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#8B5CF6);
+                  display:grid;place-items:center;font-size:1.4rem;flex-shrink:0" id="mu-avatar">👤</div>
+      <div>
+        <div style="font-weight:700;font-size:1rem;color:#0B1F3A" id="mu-nombre">—</div>
+        <div style="font-size:.75rem;color:#94A3B8" id="mu-meta">—</div>
+      </div>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#64748B;margin-bottom:10px">🔑 Cambiar Contraseña</div>
+      <div class="login-input-wrap" style="margin-bottom:8px">
+        <span class="login-icon">🔑</span>
+        <input class="login-input" type="password" id="mu-pass-new" placeholder="Nueva contraseña (mín. 6 car.)">
+      </div>
+      <div class="login-input-wrap">
+        <span class="login-icon">✅</span>
+        <input class="login-input" type="password" id="mu-pass-confirm" placeholder="Confirmar contraseña">
+      </div>
+      <button onclick="saveUserPass()" style="margin-top:10px;width:100%;padding:8px;border-radius:8px;
+              background:#0EA5C9;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        💾 Actualizar Contraseña
+      </button>
+    </div>
+
+    <!-- Resetear contraseña -->
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#92400E;margin-bottom:6px">🔄 Resetear Contraseña</div>
+      <div style="font-size:.77rem;color:#78350F;margin-bottom:10px">
+        Restablece la contraseña a: <code style="background:#FEF3C7;padding:2px 6px;border-radius:4px;font-weight:700">reset1234</code>
+      </div>
+      <button onclick="resetUserPass()" style="width:100%;padding:8px;border-radius:8px;
+              background:#F59E0B;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        🔄 Resetear a "reset1234"
+      </button>
+    </div>
+
+    <!-- Cambiar rol -->
+    <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#166534;margin-bottom:10px">🎭 Nivel de Acceso</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button id="role-btn-editor" onclick="setUserRole('editor')"
+          style="padding:10px 8px;border-radius:8px;border:2px solid #E2E8F0;
+                 font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;
+                 transition:all .2s;background:#fff;color:#64748B">
+          ✏️ Editor<br><span style="font-size:.68rem;font-weight:400">Puede editar todo</span>
+        </button>
+        <button id="role-btn-viewer" onclick="setUserRole('viewer')"
+          style="padding:10px 8px;border-radius:8px;border:2px solid #E2E8F0;
+                 font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;
+                 transition:all .2s;background:#fff;color:#64748B">
+          👁 Solo Lectura<br><span style="font-size:.68rem;font-weight:400">Ve e imprime</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Eliminar -->
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:14px;margin-bottom:4px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:#991B1B;margin-bottom:6px">🗑 Zona de Peligro</div>
+      <button onclick="deleteUserFromAjustes()" style="width:100%;padding:8px;border-radius:8px;
+              background:#EF4444;color:#fff;border:none;font-family:'DM Sans',sans-serif;
+              font-size:.82rem;font-weight:600;cursor:pointer">
+        🗑 Eliminar esta cuenta
+      </button>
+    </div>
+
+    <div id="mu-error" style="display:none;margin-top:10px;padding:9px 13px;border-radius:8px;
+         background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:.8rem;font-weight:500"></div>
+
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn-modal-cancel" style="flex:unset;width:100%" onclick="closeManageUser()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════════════════════════
+
+// Default admin + any registered users stored here
+const DEFAULT_USERS = { 'admin': 'andina2024' };
+let REGISTERED_USERS = JSON.parse(localStorage.getItem('andina_users') || '[]');
+// REGISTERED_USERS: [{ nombre, user, email, pass, role }]
+// role: 'editor' | 'viewer'  (default 'editor' if not set)
+
+// Session state
+let SESSION = { user: '', nombre: '', role: 'editor', isAdmin: false };
+
+// Admin password can be changed and is stored
+let ADMIN_PASS = localStorage.getItem('andina_admin_pass') || 'andina2024';
+
+function getAllUsers(){
+  const map = { 'admin': ADMIN_PASS };
+  REGISTERED_USERS.forEach(u => { map[u.user.toLowerCase()] = u.pass; });
+  return map;
+}
+
+function saveRegistered(){
+  localStorage.setItem('andina_users', JSON.stringify(REGISTERED_USERS));
+}
+
+function doLogin(){
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const err  = document.getElementById('login-error');
+  const all  = getAllUsers();
+
+  if(all[user] && all[user] === pass){
+    err.style.display = 'none';
+
+    // Set session
+    if(user === 'admin'){
+      SESSION = { user: 'admin', nombre: 'Admin', role: 'editor', isAdmin: true };
+    } else {
+      const reg = REGISTERED_USERS.find(u => u.user.toLowerCase() === user);
+      SESSION = {
+        user,
+        nombre: reg ? reg.nombre : user,
+        role: reg ? (reg.role || 'editor') : 'editor',
+        isAdmin: false
+      };
+    }
+
+    applyRoleRestrictions();
+    updateSidebarUser();
+
+    const screen = document.getElementById('login-screen');
+    screen.style.transition = 'opacity .5s, transform .5s';
+    screen.style.opacity = '0';
+    screen.style.transform = 'scale(1.04)';
+    setTimeout(()=>{ screen.style.display='none'; }, 500);
+    showToast('👋 Bienvenido, ' + SESSION.nombre + '!', 'success');
+  } else {
+    err.style.display = 'block';
+    err.style.animation = 'none';
+    requestAnimationFrame(()=>{ err.style.animation = 'shake .3s ease'; });
+  }
+}
+
+function applyRoleRestrictions(){
+  const isViewer = SESSION.role === 'viewer';
+  const isAdmin  = SESSION.isAdmin;
+
+  // ── Disable all inputs and action buttons for viewers ──────
+  const allInputs = document.querySelectorAll(
+    '#page-datos input, #page-datos button.btn-primary, #page-datos button.btn-secondary'
+  );
+  allInputs.forEach(el => {
+    el.disabled = isViewer;
+    if(isViewer) el.style.opacity = '.5';
+    else el.style.opacity = '';
+  });
+
+  // Overlay banner for viewer on datos page
+  let viewerBanner = document.getElementById('viewer-banner');
+  if(!viewerBanner){
+    viewerBanner = document.createElement('div');
+    viewerBanner.id = 'viewer-banner';
+    viewerBanner.className = 'alert warn';
+    viewerBanner.innerHTML = '👁 <div><strong>Modo Solo Lectura</strong> — Puedes ver todos los informes e imprimir, pero no puedes modificar los datos. Contacta al administrador si necesitas acceso de edición.</div>';
+    viewerBanner.style.marginBottom = '16px';
+    const datosPage = document.getElementById('page-datos');
+    datosPage.insertBefore(viewerBanner, datosPage.firstChild);
+  }
+  viewerBanner.style.display = isViewer ? 'flex' : 'none';
+
+  // Hide Ajustes nav for non-admins (only admin manages accounts)
+  const navAjustes = document.getElementById('nav-ajustes');
+  if(navAjustes) navAjustes.style.display = isAdmin ? '' : 'none';
+}
+
+function updateSidebarUser(){
+  const label = document.getElementById('sidebar-user-label');
+  const role  = document.getElementById('sidebar-role-label');
+  if(label) label.textContent = SESSION.nombre;
+  if(role){
+    role.textContent = SESSION.role === 'editor' ? '✏️ Editor' : '👁 Solo Lectura';
+    role.style.color = SESSION.role === 'editor' ? '#34D399' : '#FBBF24';
+  }
+}
+
+function togglePass(){
+  const inp = document.getElementById('login-pass');
+  const btn = document.getElementById('show-btn');
+  if(inp.type === 'password'){ inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁'; }
+}
+
+// ── FORGOT ────────────────────────────────────────────────────
+function openForgot(){
+  document.getElementById('modal-forgot').classList.add('open');
+  document.getElementById('forgot-email').value = '';
+  setTimeout(()=>document.getElementById('forgot-email').focus(), 100);
+}
+function closeForgot(){
+  document.getElementById('modal-forgot').classList.remove('open');
+}
+function sendForgot(){
+  const email = document.getElementById('forgot-email').value.trim();
+  if(!email){ document.getElementById('forgot-email').focus(); return; }
+  // Accept any valid email format
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if(!emailOk){
+    showToast('⚠️ Ingresa un correo electrónico válido', 'warning');
+    return;
+  }
+  closeForgot();
+  showToast('📨 Instrucciones de recuperación enviadas a ' + email, 'info');
+}
+document.getElementById('modal-forgot').addEventListener('click', function(e){
+  if(e.target === this) closeForgot();
+});
+
+// ── REGISTER ──────────────────────────────────────────────────
+const MAX_USERS = 5;
+
+function openRegister(){
+  document.getElementById('modal-register').classList.add('open');
+  document.getElementById('reg-nombre').value = '';
+  document.getElementById('reg-user').value   = '';
+  document.getElementById('reg-email').value  = '';
+  document.getElementById('reg-pass').value   = '';
+  document.getElementById('reg-error').style.display = 'none';
+  renderRegList();
+  setTimeout(()=>document.getElementById('reg-nombre').focus(), 100);
+}
+function closeRegister(){
+  document.getElementById('modal-register').classList.remove('open');
+}
+document.getElementById('modal-register').addEventListener('click', function(e){
+  if(e.target === this) closeRegister();
+});
+
+function toggleRegPass(){
+  const inp = document.getElementById('reg-pass');
+  const btn = document.getElementById('reg-show-btn');
+  if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁'; }
+}
+
+function renderRegList(){
+  const counter = document.getElementById('reg-counter');
+  const wrap    = document.getElementById('reg-list-wrap');
+  const list    = document.getElementById('reg-list');
+  const btnReg  = document.getElementById('btn-do-register');
+  const count   = REGISTERED_USERS.length;
+
+  counter.textContent = count + ' / ' + MAX_USERS + ' usuarios';
+  counter.style.background = count >= MAX_USERS ? '#FEE2E2' : '#F1F5F9';
+  counter.style.color      = count >= MAX_USERS ? '#991B1B' : '#64748B';
+  counter.style.borderColor= count >= MAX_USERS ? '#FECACA' : '#E2E8F0';
+
+  btnReg.disabled = count >= MAX_USERS;
+  btnReg.style.opacity = count >= MAX_USERS ? '.5' : '1';
+  btnReg.style.cursor  = count >= MAX_USERS ? 'not-allowed' : 'pointer';
+
+  if(count > 0){
+    wrap.style.display = 'block';
+    list.innerHTML = REGISTERED_USERS.map((u, i) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;
+                  background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:8px 12px">
+        <div>
+          <div style="font-size:.82rem;font-weight:600;color:#1E293B">👤 ${u.nombre}</div>
+          <div style="font-size:.72rem;color:#94A3B8;margin-top:1px">@${u.user} · ${u.email}</div>
+        </div>
+        <button onclick="deleteUser(${i})"
+          style="background:#FEF2F2;border:1px solid #FECACA;color:#EF4444;border-radius:6px;
+                 padding:4px 10px;font-size:.75rem;font-weight:700;cursor:pointer">
+          🗑 Eliminar
+        </button>
+      </div>`).join('');
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function deleteUser(index){
+  const u = REGISTERED_USERS[index];
+  REGISTERED_USERS.splice(index, 1);
+  saveRegistered();
+  renderRegList();
+  showToast('🗑 Usuario "' + u.user + '" eliminado', 'warning');
+}
+
+function showRegError(msg){
+  const el = document.getElementById('reg-error');
+  el.textContent = '❌ ' + msg;
+  el.style.display = 'block';
+}
+
+function doRegister(){
+  if(REGISTERED_USERS.length >= MAX_USERS){
+    showRegError('Límite de 5 usuarios alcanzado. Elimina uno para continuar.');
+    return;
+  }
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const user   = document.getElementById('reg-user').value.trim().toLowerCase();
+  const email  = document.getElementById('reg-email').value.trim();
+  const pass   = document.getElementById('reg-pass').value;
+  const errEl  = document.getElementById('reg-error');
+  errEl.style.display = 'none';
+
+  // Validations
+  if(!nombre)                  { showRegError('El nombre completo es obligatorio.'); return; }
+  if(!user || user.length < 3) { showRegError('El usuario debe tener al menos 3 caracteres.'); return; }
+  if(!/^[a-z0-9_\.]+$/.test(user)) { showRegError('El usuario solo puede tener letras, números, _ y .'); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showRegError('Ingresa un correo electrónico válido.'); return; }
+  if(!pass || pass.length < 6) { showRegError('La contraseña debe tener al menos 6 caracteres.'); return; }
+
+  // Duplicate check
+  const all = getAllUsers();
+  if(all[user]){ showRegError('El usuario "' + user + '" ya existe.'); return; }
+  const emailDup = REGISTERED_USERS.some(u => u.email.toLowerCase() === email.toLowerCase());
+  if(emailDup){ showRegError('El correo electrónico ya está registrado.'); return; }
+
+  // Save
+  REGISTERED_USERS.push({ nombre, user, email, pass });
+  saveRegistered();
+
+  // Clear fields
+  document.getElementById('reg-nombre').value = '';
+  document.getElementById('reg-user').value   = '';
+  document.getElementById('reg-email').value  = '';
+  document.getElementById('reg-pass').value   = '';
+
+  renderRegList();
+  showToast('✅ Usuario "' + user + '" registrado correctamente', 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  AJUSTES — GESTIÓN DE CUENTAS
+// ══════════════════════════════════════════════════════════════
+let managingUserIndex = null; // index in REGISTERED_USERS currently being managed
+
+function renderAjustes(){
+  const panel   = document.getElementById('ajustes-panel');
+  const blocked = document.getElementById('ajustes-blocked');
+
+  // Only admin can access settings
+  if(!SESSION.isAdmin){
+    panel.style.display   = 'none';
+    blocked.style.display = 'block';
+    return;
+  }
+  panel.style.display   = 'block';
+  blocked.style.display = 'none';
+
+  const count   = REGISTERED_USERS.length;
+  const counter = document.getElementById('ajustes-counter');
+  if(counter) counter.textContent = count + ' / 5';
+
+  const emptyEl = document.getElementById('ajustes-empty');
+  const listEl  = document.getElementById('ajustes-list');
+  if(!listEl) return;
+
+  if(count === 0){
+    emptyEl.style.display = 'block';
+    listEl.innerHTML = '';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  listEl.innerHTML = REGISTERED_USERS.map((u, i) => {
+    const role     = u.role || 'editor';
+    const roleBg   = role === 'editor' ? '#DCFCE7' : '#FEF3C7';
+    const roleClr  = role === 'editor' ? '#166534' : '#92400E';
+    const roleIcon = role === 'editor' ? '✏️ Editor' : '👁 Solo Lectura';
+    return `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+                border:1px solid #E2E8F0;border-radius:10px;padding:14px 16px;background:#FAFBFC;
+                transition:box-shadow .2s" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.08)'"
+                onmouseout="this.style.boxShadow='none'">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0EA5C9,#8B5CF6);
+                    display:grid;place-items:center;font-size:1.2rem;flex-shrink:0">👤</div>
+        <div>
+          <div style="font-weight:700;color:#0B1F3A;font-size:.88rem">${u.nombre}</div>
+          <div style="font-size:.72rem;color:#94A3B8;margin-top:2px">
+            @${u.user} · ${u.email}
+          </div>
+          <div style="margin-top:4px">
+            <span style="background:${roleBg};color:${roleClr};padding:2px 9px;
+                         border-radius:20px;font-size:.65rem;font-weight:700">${roleIcon}</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="openManageUser(${i})"
+        style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;
+               font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;
+               display:flex;align-items:center;gap:6px;transition:opacity .2s"
+        onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        ⚙️ Gestionar
+      </button>
+    </div>`;
+  }).join('');
+}
+
+// ── Admin password change ──────────────────────────────────────
+function openAdminPassModal(){
+  document.getElementById('adm-pass-old').value     = '';
+  document.getElementById('adm-pass-new').value     = '';
+  document.getElementById('adm-pass-confirm').value = '';
+  document.getElementById('adm-pass-error').style.display = 'none';
+  document.getElementById('modal-admin-pass').classList.add('open');
+  setTimeout(()=>document.getElementById('adm-pass-old').focus(), 100);
+}
+function closeAdminPassModal(){
+  document.getElementById('modal-admin-pass').classList.remove('open');
+}
+document.getElementById('modal-admin-pass').addEventListener('click', function(e){
+  if(e.target === this) closeAdminPassModal();
+});
+function saveAdminPass(){
+  const old     = document.getElementById('adm-pass-old').value;
+  const neu     = document.getElementById('adm-pass-new').value;
+  const confirm = document.getElementById('adm-pass-confirm').value;
+  const errEl   = document.getElementById('adm-pass-error');
+  errEl.style.display = 'none';
+
+  if(old !== ADMIN_PASS){ errEl.textContent='❌ La contraseña actual es incorrecta.'; errEl.style.display='block'; return; }
+  if(neu.length < 6)    { errEl.textContent='❌ La nueva contraseña debe tener al menos 6 caracteres.'; errEl.style.display='block'; return; }
+  if(neu !== confirm)   { errEl.textContent='❌ Las contraseñas no coinciden.'; errEl.style.display='block'; return; }
+
+  ADMIN_PASS = neu;
+  localStorage.setItem('andina_admin_pass', ADMIN_PASS);
+  closeAdminPassModal();
+  showToast('✅ Contraseña de Admin actualizada correctamente', 'success');
+}
+
+// ── Manage registered user ────────────────────────────────────
+function openManageUser(index){
+  managingUserIndex = index;
+  const u = REGISTERED_USERS[index];
+  document.getElementById('mu-nombre').textContent = u.nombre;
+  document.getElementById('mu-meta').textContent   = '@' + u.user + '  ·  ' + u.email;
+  document.getElementById('mu-pass-new').value     = '';
+  document.getElementById('mu-pass-confirm').value = '';
+  document.getElementById('mu-error').style.display = 'none';
+  updateRoleBtns(u.role || 'editor');
+  document.getElementById('modal-manage-user').classList.add('open');
+}
+function closeManageUser(){
+  document.getElementById('modal-manage-user').classList.remove('open');
+  managingUserIndex = null;
+}
+document.getElementById('modal-manage-user').addEventListener('click', function(e){
+  if(e.target === this) closeManageUser();
+});
+
+function updateRoleBtns(role){
+  const btnEd = document.getElementById('role-btn-editor');
+  const btnVw = document.getElementById('role-btn-viewer');
+  if(!btnEd || !btnVw) return;
+  if(role === 'editor'){
+    btnEd.style.background = '#0EA5C9'; btnEd.style.color = '#fff'; btnEd.style.borderColor = '#0EA5C9';
+    btnVw.style.background = '#fff';    btnVw.style.color = '#64748B'; btnVw.style.borderColor = '#E2E8F0';
+  } else {
+    btnVw.style.background = '#F59E0B'; btnVw.style.color = '#fff'; btnVw.style.borderColor = '#F59E0B';
+    btnEd.style.background = '#fff';    btnEd.style.color = '#64748B'; btnEd.style.borderColor = '#E2E8F0';
+  }
+}
+
+function setUserRole(role){
+  if(managingUserIndex === null) return;
+  REGISTERED_USERS[managingUserIndex].role = role;
+  saveRegistered();
+  updateRoleBtns(role);
+  const label = role === 'editor' ? 'Editor' : 'Solo Lectura';
+  const name  = REGISTERED_USERS[managingUserIndex].nombre;
+  showToast('🎭 Rol de "' + name + '" actualizado a ' + label, 'info');
+  renderAjustes();
+}
+
+function saveUserPass(){
+  if(managingUserIndex === null) return;
+  const neu     = document.getElementById('mu-pass-new').value;
+  const confirm = document.getElementById('mu-pass-confirm').value;
+  const errEl   = document.getElementById('mu-error');
+  errEl.style.display = 'none';
+
+  if(neu.length < 6)  { errEl.textContent='❌ La contraseña debe tener al menos 6 caracteres.'; errEl.style.display='block'; return; }
+  if(neu !== confirm) { errEl.textContent='❌ Las contraseñas no coinciden.'; errEl.style.display='block'; return; }
+
+  REGISTERED_USERS[managingUserIndex].pass = neu;
+  saveRegistered();
+  document.getElementById('mu-pass-new').value = '';
+  document.getElementById('mu-pass-confirm').value = '';
+  const name = REGISTERED_USERS[managingUserIndex].nombre;
+  showToast('✅ Contraseña de "' + name + '" actualizada', 'success');
+}
+
+function resetUserPass(){
+  if(managingUserIndex === null) return;
+  REGISTERED_USERS[managingUserIndex].pass = 'reset1234';
+  saveRegistered();
+  const name = REGISTERED_USERS[managingUserIndex].nombre;
+  showToast('🔄 Contraseña de "' + name + '" restablecida a "reset1234"', 'warning');
+}
+
+function deleteUserFromAjustes(){
+  if(managingUserIndex === null) return;
+  const name = REGISTERED_USERS[managingUserIndex].nombre;
+  if(!confirm('¿Eliminar la cuenta de "' + name + '"? Esta acción no se puede deshacer.')) return;
+  REGISTERED_USERS.splice(managingUserIndex, 1);
+  saveRegistered();
+  closeManageUser();
+  renderAjustes();
+  showToast('🗑 Cuenta de "' + name + '" eliminada', 'warning');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TOAST NOTIFICATIONS
+// ══════════════════════════════════════════════════════════════
+function showToast(msg, type='info', duration=3500){
+  const container = document.getElementById('toast-container');
+  const icons = { success:'✅', info:'ℹ️', warning:'⚠️' };
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type]||'ℹ️'}</span>
+    <span class="toast-msg">${msg}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  `;
+  container.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.animation = 'toastOut .35s ease forwards';
+    setTimeout(()=>toast.remove(), 350);
+  }, duration);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORT PDF DASHBOARD
+// ══════════════════════════════════════════════════════════════
+async function exportarPDF(){
+  const btn = document.getElementById('btn-pdf');
+  const originalHTML = btn.innerHTML;
+
+  // Show loading state on button
+  btn.disabled = true;
+  btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:8px">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+    <span id="pdf-progress">Preparando...</span>
+  </span>`;
+
+  // Animate spinner
+  let angle = 0;
+  const spinnerPath = btn.querySelector('path');
+  const spin = setInterval(()=>{
+    angle += 15;
+    if(spinnerPath) spinnerPath.style.transform = `rotate(${angle}deg)`;
+  }, 50);
+
+  const setProgress = msg => {
+    const el = document.getElementById('pdf-progress');
+    if(el) el.textContent = msg;
+  };
+
+  try {
+    showToast('📄 Generando PDF del dashboard...', 'info', 8000);
+
+    // Sections to capture
+    const sections = [
+      { id: 'dash-alerts',      label: 'Alertas del Sistema' },
+      { id: 'ratio-kpis',       label: 'KPIs de Ratios' },
+      { id: 'page-dashboard',   label: null, fullPage: true },
+    ];
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = 210, pageH = 297, margin = 12;
+
+    // ── COVER PAGE ─────────────────────────────────────────────
+    setProgress('Portada...');
+    const grad = pdf.setFillColor(11, 31, 58);
+    pdf.rect(0, 0, pageW, pageH, 'F');
+
+    // Accent stripe
+    pdf.setFillColor(14, 165, 201);
+    pdf.rect(0, 0, 6, pageH, 'F');
+
+    // Title block
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(26);
+    pdf.text('DASHBOARD', margin + 6, 80);
+    pdf.setFontSize(18);
+    pdf.text('FINANCIERO', margin + 6, 93);
+
+    pdf.setFillColor(14, 165, 201);
+    pdf.rect(margin + 6, 98, 80, 1.5, 'F');
+
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(148, 163, 184);
+    pdf.text('Comercial Andina S.A.C.', margin + 6, 108);
+    pdf.text('Análisis de Ratios e Información Financiera', margin + 6, 115);
+    pdf.text('Ejercicio 2024  ·  Expresado en Soles (S/)', margin + 6, 122);
+
+    // Date box
+    const today = new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'long',year:'numeric'});
+    pdf.setFillColor(21, 45, 78);
+    pdf.roundedRect(margin + 6, 240, 100, 22, 3, 3, 'F');
+    pdf.setTextColor(100, 116, 139);
+    pdf.setFontSize(8);
+    pdf.text('FECHA DE GENERACIÓN', margin + 10, 248);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(today, margin + 10, 256);
+
+    // Confidential tag
+    pdf.setFillColor(239, 68, 68);
+    pdf.roundedRect(pageW - margin - 6 - 46, 240, 46, 22, 3, 3, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('CONFIDENCIAL', pageW - margin - 6 - 42, 253, { align: 'left' });
+
+    // ── PAGE 2+: Capture dashboard sections ────────────────────
+    setProgress('Capturando gráficos...');
+
+    // We'll capture the full dashboard page content in chunks
+    const dashPage = document.getElementById('page-dashboard');
+
+    // Temporarily make all children capturable
+    const captureOpts = {
+      scale: 1.8,
+      useCORS: true,
+      backgroundColor: '#F1F5F9',
+      logging: false,
+      allowTaint: true,
+    };
+
+    // Capture KPI strip
+    setProgress('KPIs...');
+    const kpiEl = document.getElementById('ratio-kpis');
+    if(kpiEl){
+      pdf.addPage();
+      // Header bar
+      pdf.setFillColor(11, 31, 58);
+      pdf.rect(0, 0, pageW, 18, 'F');
+      pdf.setFillColor(14, 165, 201); pdf.rect(0, 0, 4, 18, 'F');
+      pdf.setTextColor(255,255,255); pdf.setFont('helvetica','bold'); pdf.setFontSize(10);
+      pdf.text('INDICADORES CLAVE DE RATIOS', margin, 11.5);
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(148,163,184);
+      pdf.text('Comercial Andina S.A.C. · 2024', pageW - margin, 11.5, { align:'right' });
+
+      const kpiCanvas = await html2canvas(kpiEl, captureOpts);
+      const kpiImg = kpiCanvas.toDataURL('image/png');
+      const kpiAR = kpiCanvas.height / kpiCanvas.width;
+      const kpiW = pageW - margin*2;
+      const kpiH = Math.min(kpiW * kpiAR, 60);
+      pdf.addImage(kpiImg, 'PNG', margin, 22, kpiW, kpiH);
+    }
+
+    // Capture alerts
+    setProgress('Alertas...');
+    const alertEl = document.getElementById('dash-alerts');
+    if(alertEl && alertEl.innerHTML.trim()){
+      const alertCanvas = await html2canvas(alertEl, {...captureOpts, backgroundColor:'#F1F5F9'});
+      const alertImg = alertCanvas.toDataURL('image/png');
+      const alertAR = alertCanvas.height / alertCanvas.width;
+      const alertW = pageW - margin*2;
+      const alertH = Math.min(alertW * alertAR, 50);
+      const kpiEl2 = document.getElementById('ratio-kpis');
+      const kpiCanvas2 = await html2canvas(kpiEl2, captureOpts);
+      const kpiAR2 = kpiCanvas2.height / kpiCanvas2.width;
+      const kpiH2 = Math.min((pageW-margin*2)*kpiAR2, 60);
+      pdf.addImage(alertImg, 'PNG', margin, 22 + kpiH2 + 6, alertW, alertH);
+    }
+
+    // Capture charts grid
+    setProgress('Gráficos...');
+    const chartsGrid = dashPage.querySelector('.charts-grid-2');
+    if(chartsGrid){
+      pdf.addPage();
+      pdf.setFillColor(11, 31, 58); pdf.rect(0, 0, pageW, 18, 'F');
+      pdf.setFillColor(16, 185, 129); pdf.rect(0, 0, 4, 18, 'F');
+      pdf.setTextColor(255,255,255); pdf.setFont('helvetica','bold'); pdf.setFontSize(10);
+      pdf.text('ANÁLISIS GRÁFICO DE RATIOS FINANCIEROS', margin, 11.5);
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(148,163,184);
+      pdf.text('Comercial Andina S.A.C. · 2024', pageW - margin, 11.5, { align:'right' });
+
+      const gridCanvas = await html2canvas(chartsGrid, {...captureOpts, scale:1.4});
+      const gridImg = gridCanvas.toDataURL('image/png');
+      const gridAR = gridCanvas.height / gridCanvas.width;
+      const gridW = pageW - margin*2;
+      const gridH = Math.min(gridW * gridAR, pageH - 30);
+      pdf.addImage(gridImg, 'PNG', margin, 22, gridW, gridH);
+    }
+
+    // Capture ratio table
+    setProgress('Tabla de ratios...');
+    const ratioCard = dashPage.querySelector('.ratio-table')?.closest('.card');
+    if(ratioCard){
+      pdf.addPage();
+      pdf.setFillColor(11, 31, 58); pdf.rect(0, 0, pageW, 18, 'F');
+      pdf.setFillColor(245, 158, 11); pdf.rect(0, 0, 4, 18, 'F');
+      pdf.setTextColor(255,255,255); pdf.setFont('helvetica','bold'); pdf.setFontSize(10);
+      pdf.text('TABLA ANALÍTICA DE RATIOS — GUÍA PARA DECISIONES', margin, 11.5);
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(148,163,184);
+      pdf.text('Comercial Andina S.A.C. · 2024', pageW - margin, 11.5, {align:'right'});
+
+      const tableCanvas = await html2canvas(ratioCard, {...captureOpts, scale:1.3});
+      const tableImg = tableCanvas.toDataURL('image/png');
+      const tableAR = tableCanvas.height / tableCanvas.width;
+      const tableW = pageW - margin*2;
+      const tableH = tableW * tableAR;
+
+      if(tableH <= pageH - 30){
+        pdf.addImage(tableImg, 'PNG', margin, 22, tableW, tableH);
+      } else {
+        // Split into two pages
+        const halfH = (pageH - 30) / tableAR;
+        pdf.addImage(tableImg, 'PNG', margin, 22, tableW, pageH - 30);
+        pdf.addPage();
+        pdf.setFillColor(11, 31, 58); pdf.rect(0, 0, pageW, 18, 'F');
+        pdf.setFillColor(245,158,11); pdf.rect(0, 0, 4, 18, 'F');
+        pdf.addImage(tableImg, 'PNG', margin, 22 - (pageH - 30), tableW, tableH);
+      }
+    }
+
+    // Capture recommendations
+    setProgress('Recomendaciones...');
+    const recCard = document.getElementById('recomendaciones')?.closest('.card');
+    if(recCard){
+      pdf.addPage();
+      pdf.setFillColor(11, 31, 58); pdf.rect(0, 0, pageW, 18, 'F');
+      pdf.setFillColor(139, 92, 246); pdf.rect(0, 0, 4, 18, 'F');
+      pdf.setTextColor(255,255,255); pdf.setFont('helvetica','bold'); pdf.setFontSize(10);
+      pdf.text('RECOMENDACIONES ESTRATÉGICAS', margin, 11.5);
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(148,163,184);
+      pdf.text('Comercial Andina S.A.C. · 2024', pageW - margin, 11.5, {align:'right'});
+
+      const recCanvas = await html2canvas(recCard, captureOpts);
+      const recImg = recCanvas.toDataURL('image/png');
+      const recAR = recCanvas.height / recCanvas.width;
+      const recW = pageW - margin*2;
+      pdf.addImage(recImg, 'PNG', margin, 22, recW, recW * recAR);
+    }
+
+    // ── FOOTER on all pages ────────────────────────────────────
+    setProgress('Finalizando...');
+    const totalPages = pdf.getNumberOfPages();
+    for(let i = 2; i <= totalPages; i++){
+      pdf.setPage(i);
+      pdf.setFillColor(11, 31, 58);
+      pdf.rect(0, pageH - 10, pageW, 10, 'F');
+      pdf.setFillColor(14, 165, 201);
+      pdf.rect(0, pageH - 10, 4, 10, 'F');
+      pdf.setTextColor(148, 163, 184);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(7);
+      pdf.text('Comercial Andina S.A.C.  ·  Dashboard Financiero 2024  ·  Información Confidencial', margin, pageH - 4);
+      pdf.text(`Pág. ${i} / ${totalPages}`, pageW - margin, pageH - 4, { align: 'right' });
+    }
+
+    // Save
+    pdf.save('Dashboard_Financiero_Andina_2024.pdf');
+    clearInterval(spin);
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    showToast('✅ PDF descargado correctamente', 'success');
+
+  } catch(err){
+    clearInterval(spin);
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    console.error(err);
+    showToast('❌ Error al generar el PDF. Intenta de nuevo.', 'warning', 4000);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CHART INSTANCES (para destruir y recrear)
+// ══════════════════════════════════════════════════════════════
+const charts = {};
+
+function destroyChart(id){
+  if(charts[id]){ charts[id].destroy(); delete charts[id]; }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  UTILIDADES
+// ══════════════════════════════════════════════════════════════
+const fmt = v => {
+  if(v === null || v === undefined || isNaN(v)) return '—';
+  const abs = Math.abs(v);
+  const str = abs.toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
+  return (v<0?'(S/ '+str+')':'S/ '+str);
+};
+const pct = v => isNaN(v)||!isFinite(v)?'—':(v*100).toFixed(1)+'%';
+const xfmt = v => isNaN(v)||!isFinite(v)?'—':v.toFixed(2)+'x';
+const g = id => parseFloat(document.getElementById(id)?.value)||0;
+
+// Colors
+const C = {
+  navy:'#0B1F3A', teal:'#0EA5C9', green:'#10B981', amber:'#F59E0B',
+  red:'#EF4444', purple:'#8B5CF6', slate:'#64748B',
+  teal2:'rgba(14,165,201,.15)', green2:'rgba(16,185,129,.15)',
+  amber2:'rgba(245,158,11,.15)', red2:'rgba(239,68,68,.15)',
+};
+
+// ══════════════════════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════════════════════
+const titles = {
+  datos:'📝 Ingreso de Datos',
+  resultados:'📈 Estado de Resultados',
+  flujo:'💸 Flujo de Caja',
+  balance:'🏛 Balance General',
+  dashboard:'📐 Dashboard & Ratios',
+  ajustes:'⚙️ Ajustes — Gestión de Cuentas'
+};
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')?.includes("'"+id+"'")) n.classList.add('active');
+  });
+  document.getElementById('topbar-title').textContent = titles[id]||'';
+  if(id === 'ajustes') renderAjustes();
+  else calcularTodo();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CÁLCULO PRINCIPAL
+// ══════════════════════════════════════════════════════════════
+function calcularTodo(){
+  const D = getData();
+  renderResultados(D);
+  renderFlujo(D);
+  renderBalance(D);
+  renderDashboard(D);
+  updateTopbar(D);
+}
+
+function getData(){
+  // Ingresos y costos
+  const ventas     = g('ventas');
+  const servicios  = g('servicios');
+  const otros_ing  = g('otros_ing');
+  const costo_v    = g('costo_ventas');
+  const gs_v       = g('gs_ventas');
+  const gs_a       = g('gs_admin');
+  const gs_f       = g('gs_fin');
+  const deprec     = g('deprec');
+  const tasa       = g('tasa_ir')/100;
+
+  const total_ing  = ventas + servicios + otros_ing;
+  const ut_bruta   = total_ing - costo_v;
+  const ebit       = ut_bruta - gs_v - gs_a;
+  const ut_ai      = ebit - gs_f - deprec;
+  const ir         = ut_ai > 0 ? ut_ai * tasa : 0;
+  const ut_neta    = ut_ai - ir;
+
+  // Flujo
+  const cobr   = g('cobranzas');
+  const pp     = g('pag_prov');
+  const ppl    = g('pag_plan');
+  const ptrib  = g('pag_trib');
+  const caf    = g('compra_af');
+  const prest  = g('prestamos');
+  const amort  = g('amort');
+  const s_ini  = g('saldo_ini');
+
+  const f_op   = cobr - pp - ppl - ptrib;
+  const f_inv  = -caf;
+  const f_fin  = prest - amort;
+  const f_neto = f_op + f_inv + f_fin;
+  const s_fin  = s_ini + f_neto;
+
+  // Balance
+  const caja_b = g('caja');
+  const cxc    = g('cxc');
+  const inv    = g('inventarios');
+  const af     = g('af_netos');
+  const oact   = g('otros_act');
+  const cxp    = g('cxp');
+  const odeu   = g('otras_deudas');
+  const dlp    = g('dlp');
+  const cap    = g('capital');
+  const res    = g('reservas');
+
+  const act_cte   = caja_b + cxc + inv;
+  const act_ncte  = af + oact;
+  const total_act = act_cte + act_ncte;
+  const pas_cte   = cxp + odeu;
+  const pas_ncte  = dlp;
+  const total_pas = pas_cte + pas_ncte;
+  const patrimonio= cap + res + ut_neta;
+  const total_pyp = total_pas + patrimonio;
+  const diff      = Math.abs(total_act - total_pyp);
+  const cuadra    = diff < 1;
+
+  return {
+    ventas, servicios, otros_ing, costo_v, gs_v, gs_a, gs_f, deprec, tasa,
+    total_ing, ut_bruta, ebit, ut_ai, ir, ut_neta,
+    cobr, pp, ppl, ptrib, caf, prest, amort, s_ini,
+    f_op, f_inv, f_fin, f_neto, s_fin,
+    caja_b, cxc, inv, af, oact, cxp, odeu, dlp, cap, res,
+    act_cte, act_ncte, total_act, pas_cte, pas_ncte, total_pas,
+    patrimonio, total_pyp, cuadra, diff,
+    // Ratios
+    r_liq:    pas_cte ? act_cte / pas_cte : 0,
+    r_acida:  pas_cte ? (act_cte - inv) / pas_cte : 0,
+    r_mb:     total_ing ? ut_bruta / total_ing : 0,
+    r_mn:     total_ing ? ut_neta / total_ing : 0,
+    r_roe:    patrimonio ? ut_neta / patrimonio : 0,
+    r_end:    total_act ? total_pas / total_act : 0,
+    r_cob:    gs_f ? ebit / gs_f : 0,
+    r_roa:    total_act ? ut_neta / total_act : 0,
+  };
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TOPBAR
+// ══════════════════════════════════════════════════════════════
+function updateTopbar(D){
+  const chip = document.getElementById('balance-chip');
+  if(D.cuadra){
+    chip.className='chip good'; chip.textContent='✅ Balance Cuadrado';
+  } else {
+    chip.className='chip bad'; chip.textContent=`⚠️ Dif: ${fmt(D.diff)}`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ESTADO DE RESULTADOS
+// ══════════════════════════════════════════════════════════════
+function renderResultados(D){
+  // KPIs
+  const kpis=[
+    ['k-ing', D.total_ing],['k-bruta',D.ut_bruta],
+    ['k-ebit',D.ebit],['k-neta',D.ut_neta]
+  ];
+  kpis.forEach(([id,v])=>{ const el=document.getElementById(id); if(el) el.textContent=fmt(v); });
+
+  const rows = [
+    {type:'header',label:'INGRESOS OPERACIONALES'},
+    {type:'sub',label:'Ventas de Mercadería', v:D.ventas, pct:D.ventas/D.total_ing},
+    {type:'sub',label:'Prestación de Servicios', v:D.servicios, pct:D.servicios/D.total_ing},
+    {type:'sub',label:'Otros Ingresos', v:D.otros_ing, pct:D.otros_ing/D.total_ing},
+    {type:'total',label:'TOTAL INGRESOS', v:D.total_ing, pct:1},
+    {type:'header',label:'COSTOS Y GASTOS'},
+    {type:'sub',label:'(-) Costo de Ventas', v:D.costo_v, neg:true, pct:D.costo_v/D.total_ing},
+    {type:'hl',label:'UTILIDAD BRUTA', v:D.ut_bruta, pct:D.ut_bruta/D.total_ing},
+    {type:'sub',label:'(-) Gastos de Ventas', v:D.gs_v, neg:true, pct:D.gs_v/D.total_ing},
+    {type:'sub',label:'(-) Gastos Administrativos', v:D.gs_a, neg:true, pct:D.gs_a/D.total_ing},
+    {type:'hl',label:'UTILIDAD OPERATIVA (EBIT)', v:D.ebit, pct:D.ebit/D.total_ing},
+    {type:'sub',label:'(-) Gastos Financieros', v:D.gs_f, neg:true},
+    {type:'sub',label:'(-) Depreciación', v:D.deprec, neg:true},
+    {type:'sub',label:'UTILIDAD ANTES DE IMPUESTOS', v:D.ut_ai},
+    {type:'sub',label:`(-) Impuesto a la Renta ${(D.tasa*100).toFixed(1)}%`, v:D.ir, neg:true},
+    {type:'total',label:'UTILIDAD NETA DEL EJERCICIO', v:D.ut_neta, pct:D.ut_neta/D.total_ing},
+  ];
+
+  const tbody = document.getElementById('er-body');
+  if(!tbody) return;
+  tbody.innerHTML = rows.map(r=>{
+    if(r.type==='header') return `<tr class="row-header"><td colspan="3">${r.label}</td></tr>`;
+    const pctStr = r.pct!==undefined ? `<td style="color:var(--slate2);font-size:.75rem;font-family:'DM Mono',monospace">${pct(r.pct)}</td>` : '<td></td>';
+    const cls = r.type==='total'?'row-total':r.type==='hl'?'row-hl':r.neg?'row-sub row-neg':'row-sub';
+    return `<tr class="${cls}"><td>${r.label}</td><td style="text-align:right;font-family:'DM Mono',monospace;font-weight:600">${fmt(r.v)}</td>${pctStr}</tr>`;
+  }).join('');
+
+  // Charts
+  renderChartIngresos(D);
+  renderChartCascade(D);
+}
+
+function renderChartIngresos(D){
+  destroyChart('ingresos');
+  const ctx = document.getElementById('ch-ingresos');
+  if(!ctx) return;
+  charts['ingresos'] = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels:['Ventas Mercadería','Servicios','Otros Ingresos'],
+      datasets:[{
+        data:[D.ventas, D.servicios, D.otros_ing],
+        backgroundColor:[C.teal, C.green, C.amber],
+        borderWidth:2, borderColor:'#fff', hoverOffset:8
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      cutout:'62%',
+      plugins:{
+        legend:{position:'right',labels:{padding:14,usePointStyle:true,font:{family:'DM Sans',size:11}}},
+        tooltip:{callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}
+      }
+    }
+  });
+}
+
+function renderChartCascade(D){
+  destroyChart('cascade');
+  const ctx = document.getElementById('ch-cascade');
+  if(!ctx) return;
+  const vals = [D.total_ing, D.ut_bruta, D.ebit, D.ut_ai, D.ut_neta];
+  const labels = ['Ing. Total','Ut. Bruta','EBIT','Ut. Antes IR','Ut. Neta'];
+  charts['cascade'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Monto S/',
+        data:vals,
+        backgroundColor: vals.map(v=>v>=0?C.teal:C.red),
+        borderRadius:6, borderSkipped:false
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'S/ '+c.raw.toLocaleString('es-PE')}}},
+      scales:{
+        y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>'S/'+v.toLocaleString('es-PE'),font:{family:'DM Mono',size:10}}},
+        x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  FLUJO DE CAJA
+// ══════════════════════════════════════════════════════════════
+function renderFlujo(D){
+  const kv=[['k-op',D.f_op],['k-inv',D.f_inv],['k-fin',D.f_fin],['k-saldo',D.s_fin]];
+  kv.forEach(([id,v])=>{ const el=document.getElementById(id); if(el) el.textContent=fmt(v); });
+
+  // Alert
+  const al=document.getElementById('flujo-alert');
+  const alm=document.getElementById('flujo-alert-msg');
+  if(al && alm){
+    if(D.s_fin<0){
+      al.style.display='flex'; al.className='alert danger';
+      alm.textContent=`Saldo final de caja negativo (${fmt(D.s_fin)}). Se recomienda revisar las amortizaciones de deuda y buscar fuentes de financiamiento a corto plazo.`;
+    } else if(D.s_fin<5000){
+      al.style.display='flex'; al.className='alert warn';
+      alm.textContent=`Saldo final bajo (${fmt(D.s_fin)}). Mantener reserva mínima de liquidez para operaciones.`;
+    } else {
+      al.style.display='none';
+    }
+  }
+
+  const rows=[
+    {type:'header',label:'I. ACTIVIDADES DE OPERACIÓN'},
+    {type:'sub',label:'(+) Cobranzas a Clientes', v:D.cobr},
+    {type:'sub',label:'(-) Pagos a Proveedores', v:-D.pp, neg:true},
+    {type:'sub',label:'(-) Pagos de Planillas', v:-D.ppl, neg:true},
+    {type:'sub',label:'(-) Pagos de Tributos', v:-D.ptrib, neg:true},
+    {type:'total',label:'FLUJO NETO DE OPERACIÓN', v:D.f_op},
+    {type:'header',label:'II. ACTIVIDADES DE INVERSIÓN'},
+    {type:'sub',label:'(-) Compra de Activos Fijos', v:-D.caf, neg:true},
+    {type:'total',label:'FLUJO NETO DE INVERSIÓN', v:D.f_inv},
+    {type:'header',label:'III. ACTIVIDADES DE FINANCIAMIENTO'},
+    {type:'sub',label:'(+) Préstamos Recibidos', v:D.prest},
+    {type:'sub',label:'(-) Amortización de Deudas', v:-D.amort, neg:true},
+    {type:'total',label:'FLUJO NETO DE FINANCIAMIENTO', v:D.f_fin},
+    {type:'hl',label:'VARIACIÓN NETA DEL EFECTIVO', v:D.f_neto},
+    {type:'sub',label:'(+) Saldo Inicial de Caja', v:D.s_ini},
+    {type:'total',label:'SALDO FINAL DE CAJA', v:D.s_fin},
+  ];
+
+  const tbody=document.getElementById('flujo-body');
+  if(tbody) tbody.innerHTML = rows.map(r=>{
+    if(r.type==='header') return `<tr class="row-header"><td colspan="2">${r.label}</td></tr>`;
+    const cls = r.type==='total'?'row-total':r.type==='hl'?'row-hl':r.neg?'row-sub row-neg':'row-sub';
+    const color = r.v<0?'color:var(--red)':'';
+    return `<tr class="${cls}"><td>${r.label}</td><td style="text-align:right;font-family:'DM Mono',monospace;font-weight:600;${color}">${fmt(r.v)}</td></tr>`;
+  }).join('');
+
+  // Flujo chart
+  destroyChart('flujo');
+  const ctx=document.getElementById('ch-flujo');
+  if(ctx){
+    const labels=['Flujo Op.','Flujo Inv.','Flujo Fin.'];
+    const vals=[D.f_op, D.f_inv, D.f_fin];
+    charts['flujo'] = new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels,
+        datasets:[{
+          label:'S/',
+          data:vals,
+          backgroundColor:vals.map(v=>v>=0?C.green:C.red),
+          borderRadius:8,borderSkipped:false
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'S/ '+c.raw.toLocaleString('es-PE')}}},
+        scales:{
+          y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>'S/'+v.toLocaleString('es-PE'),font:{family:'DM Mono',size:10}}},
+          x:{grid:{display:false}}
+        }
+      }
+    });
+  }
+
+  // Bars
+  const barsEl=document.getElementById('flujo-bars');
+  if(barsEl){
+    const max=Math.max(D.cobr,D.pp+D.ppl+D.ptrib,D.amort)||1;
+    const items=[
+      {label:'Cobranzas',v:D.cobr,color:C.teal},
+      {label:'Pagos Proveedores',v:D.pp,color:C.red},
+      {label:'Planillas',v:D.ppl,color:C.amber},
+      {label:'Amort.Deudas',v:D.amort,color:C.purple},
+    ];
+    barsEl.innerHTML=items.map(i=>`
+      <div class="prog-item">
+        <div class="prog-label"><span>${i.label}</span><span>${fmt(i.v)}</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,(i.v/max)*100).toFixed(1)}%;background:${i.color}"></div></div>
+      </div>`).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  BALANCE GENERAL
+// ══════════════════════════════════════════════════════════════
+function renderBalance(D){
+  const kv=[['k-act',D.total_act],['k-pas',D.total_pas],['k-pat',D.patrimonio],['k-ver',D.cuadra?'✅ OK':'⚠️ Error']];
+  kv.forEach(([id,v])=>{ const el=document.getElementById(id); if(el) el.textContent=typeof v==='string'?v:fmt(v); });
+
+  const banner=document.getElementById('balance-check-banner');
+  if(banner){
+    if(D.cuadra){
+      banner.className='balance-check ok';
+      banner.innerHTML=`✅ <strong>BALANCE CUADRADO</strong> — Activos = Pasivos + Patrimonio = ${fmt(D.total_act)}`;
+    } else {
+      banner.className='balance-check err';
+      banner.innerHTML=`⚠️ <strong>BALANCE NO CUADRA</strong> — Diferencia: ${fmt(D.diff)} — Revisa los datos ingresados`;
+    }
+  }
+
+  const actRows=[
+    {type:'header',label:'ACTIVO CORRIENTE'},
+    {type:'sub',label:'Caja y Bancos',v:D.caja_b},
+    {type:'sub',label:'Cuentas por Cobrar',v:D.cxc},
+    {type:'sub',label:'Inventarios',v:D.inv},
+    {type:'total',label:'TOTAL ACTIVO CORRIENTE',v:D.act_cte},
+    {type:'header',label:'ACTIVO NO CORRIENTE'},
+    {type:'sub',label:'Activos Fijos Netos',v:D.af},
+    {type:'sub',label:'Otros Activos',v:D.oact},
+    {type:'total',label:'TOTAL ACTIVO NO CORRIENTE',v:D.act_ncte},
+    {type:'hl',label:'TOTAL ACTIVOS',v:D.total_act},
+  ];
+  const pasRows=[
+    {type:'header',label:'PASIVO CORRIENTE'},
+    {type:'sub',label:'Cuentas por Pagar',v:D.cxp},
+    {type:'sub',label:'Otras Deudas',v:D.odeu},
+    {type:'total',label:'TOTAL PASIVO CORRIENTE',v:D.pas_cte},
+    {type:'header',label:'PASIVO NO CORRIENTE'},
+    {type:'sub',label:'Deudas a Largo Plazo',v:D.dlp},
+    {type:'total',label:'TOTAL PASIVO NO CORRIENTE',v:D.pas_ncte},
+    {type:'header',label:'PATRIMONIO'},
+    {type:'sub',label:'Capital Social',v:D.cap},
+    {type:'sub',label:'Reservas',v:D.res},
+    {type:'sub',label:'Utilidad del Ejercicio',v:D.ut_neta},
+    {type:'total',label:'TOTAL PATRIMONIO',v:D.patrimonio},
+    {type:'hl',label:'TOTAL PASIVOS + PATRIMONIO',v:D.total_pyp},
+  ];
+
+  const rowHtml=(rows)=>rows.map(r=>{
+    if(r.type==='header') return `<tr class="row-header"><td colspan="2">${r.label}</td></tr>`;
+    const cls=r.type==='total'?'row-total':r.type==='hl'?'row-hl':'row-sub';
+    return `<tr class="${cls}"><td>${r.label}</td><td style="text-align:right;font-family:'DM Mono',monospace;font-weight:600">${fmt(r.v)}</td></tr>`;
+  }).join('');
+
+  const ab=document.getElementById('activos-body');
+  const pb=document.getElementById('pasivos-body');
+  if(ab) ab.innerHTML=rowHtml(actRows);
+  if(pb) pb.innerHTML=rowHtml(pasRows);
+
+  // Balance chart
+  destroyChart('balance');
+  const ctx=document.getElementById('ch-balance');
+  if(ctx){
+    charts['balance']=new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:['Act.Corriente','Act.No Cte.','Pas.Corriente','Pas.No Cte.','Patrimonio'],
+        datasets:[{
+          data:[D.act_cte,D.act_ncte,D.pas_cte,D.pas_ncte,D.patrimonio],
+          backgroundColor:[C.teal,'#0284C7',C.red,'#DC2626',C.green],
+          borderWidth:2,borderColor:'#fff',hoverOffset:8
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'55%',
+        plugins:{
+          legend:{position:'right',labels:{padding:12,usePointStyle:true,font:{family:'DM Sans',size:11}}},
+          tooltip:{callbacks:{label:c=>'S/ '+c.raw.toLocaleString('es-PE')}}
+        }
+      }
+    });
+  }
+
+  // Breakdown
+  const bd=document.getElementById('balance-breakdown');
+  if(bd){
+    const tot=D.total_act||1;
+    const items=[
+      {label:'Act. Corriente',v:D.act_cte,color:C.teal,pct:D.act_cte/tot},
+      {label:'Act. No Corriente',v:D.act_ncte,color:'#0284C7',pct:D.act_ncte/tot},
+      {label:'Pasivo Corriente',v:D.pas_cte,color:C.red,pct:D.pas_cte/tot},
+      {label:'Pasivo No Cte.',v:D.pas_ncte,color:'#DC2626',pct:D.pas_ncte/tot},
+      {label:'Patrimonio',v:D.patrimonio,color:C.green,pct:D.patrimonio/tot},
+    ];
+    bd.innerHTML='<div class="progress-row">'+items.map(i=>`
+      <div class="prog-item">
+        <div class="prog-label">
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:${i.color};display:inline-block"></span>${i.label}</span>
+          <span>${fmt(i.v)} <span style="color:var(--slate2)">(${pct(i.pct)})</span></span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,Math.abs(i.pct)*100).toFixed(1)}%;background:${i.color}"></div></div>
+      </div>`).join('')+'</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DASHBOARD & RATIOS
+// ══════════════════════════════════════════════════════════════
+function ratioStatus(v,bench,dir='up'){
+  // dir='up' means higher is better, 'down' means lower is better
+  if(dir==='up'){
+    if(v>=bench*0.9) return 'ok';
+    if(v>=bench*0.6) return 'warn';
+    return 'bad';
+  } else {
+    if(v<=bench*1.1) return 'ok';
+    if(v<=bench*1.5) return 'warn';
+    return 'bad';
+  }
+}
+
+function statusLabel(s){
+  if(s==='ok')   return '<span class="pill ok">✅ ÓPTIMO</span>';
+  if(s==='warn') return '<span class="pill warn">⚠️ ALERTA</span>';
+  return '<span class="pill bad">🔴 CRÍTICO</span>';
+}
+
+function renderDashboard(D){
+  const ratios=[
+    {name:'Liquidez Corriente', v:D.r_liq,  fmt_v:xfmt(D.r_liq),  bench:'≥ 1.5x', bv:1.5, dir:'up',
+     color: D.r_liq>=1.5?C.green:D.r_liq>=0.9?C.amber:C.red,
+     interp:'Por cada S/1 de deuda corriente, la empresa tiene '+xfmt(D.r_liq)+' en activos corrientes. '+(D.r_liq<1?'Riesgo de incumplimiento a corto plazo. Negociar extensión de plazos con proveedores.':'Posición de liquidez adecuada.')},
+    {name:'Prueba Ácida',       v:D.r_acida,fmt_v:xfmt(D.r_acida),bench:'≥ 1.0x', bv:1.0, dir:'up',
+     color: D.r_acida>=1?C.green:D.r_acida>=0.6?C.amber:C.red,
+     interp:'Excluyendo inventarios, la cobertura de obligaciones corrientes es '+xfmt(D.r_acida)+'. '+(D.r_acida<1?'Presión de tesorería. Acelerar cobranzas y revisar rotación de inventarios.':'Cobertura suficiente sin liquidar inventarios.')},
+    {name:'Margen Bruto',       v:D.r_mb,   fmt_v:pct(D.r_mb),    bench:'≥ 30%', bv:0.30, dir:'up',
+     color: D.r_mb>=0.3?C.green:C.amber,
+     interp:'El '+pct(D.r_mb)+' de los ingresos queda tras cubrir el costo de ventas. '+(D.r_mb>0.5?'Excelente eficiencia en costos directos.':'Revisar estructura de costos de producción.')},
+    {name:'Margen Neto',        v:D.r_mn,   fmt_v:pct(D.r_mn),    bench:'≥ 10%', bv:0.10, dir:'up',
+     color: D.r_mn>=0.1?C.green:D.r_mn>=0?C.amber:C.red,
+     interp:'De cada S/100 de ingresos, S/'+((D.r_mn||0)*100).toFixed(1)+' se convierte en utilidad neta. '+(D.r_mn>=0.1?'Alta rentabilidad.':'Revisar gastos operativos y financieros.')},
+    {name:'ROE',                v:D.r_roe,  fmt_v:pct(D.r_roe),   bench:'≥ 15%', bv:0.15, dir:'up',
+     color: D.r_roe>=0.15?C.green:D.r_roe>=0.08?C.amber:C.red,
+     interp:'Retorno sobre patrimonio: '+pct(D.r_roe)+'. '+(D.r_roe>=0.15?'Excelente retorno para los accionistas.':'Considerar optimizar uso del capital propio.')},
+    {name:'Endeudamiento',      v:D.r_end,  fmt_v:xfmt(D.r_end),  bench:'≤ 1.0x',bv:1.0, dir:'down',
+     color: D.r_end<=1?C.green:D.r_end<=1.3?C.amber:C.red,
+     interp:'Los pasivos representan '+pct(D.r_end)+' de los activos. '+(D.r_end>1?'Nivel de deuda supera activos. Reducir endeudamiento o aumentar capital.':'Estructura financiera saludable.')},
+    {name:'Cobertura Intereses',v:D.r_cob,  fmt_v:xfmt(D.r_cob),  bench:'≥ 3.0x',bv:3.0, dir:'up',
+     color: D.r_cob>=3?C.green:D.r_cob>=1.5?C.amber:C.red,
+     interp:'El EBIT cubre '+xfmt(D.r_cob)+' los gastos financieros. '+(D.r_cob>=3?'Amplia capacidad de pago de intereses.':'Revisar carga financiera.')},
+    {name:'ROA',                v:D.r_roa,  fmt_v:pct(D.r_roa),   bench:'≥ 5%',  bv:0.05, dir:'up',
+     color: D.r_roa>=0.05?C.green:D.r_roa>=0.02?C.amber:C.red,
+     interp:'Retorno sobre activos: '+pct(D.r_roa)+'. '+(D.r_roa>=0.05?'Los activos generan buen retorno.':'Mejorar eficiencia en el uso de activos.')},
+  ];
+
+  // KPI cards
+  const kpiEl=document.getElementById('ratio-kpis');
+  if(kpiEl){
+    const top4=ratios.slice(0,4);
+    kpiEl.innerHTML=top4.map(r=>`
+      <div style="background:#fff;border-radius:12px;padding:16px 18px;box-shadow:var(--sh);border-left:4px solid ${r.color}">
+        <div style="font-size:.68rem;font-weight:600;color:var(--slate2);text-transform:uppercase;letter-spacing:.06em">${r.name}</div>
+        <div style="font-size:1.6rem;font-weight:700;color:${r.color};font-family:'DM Mono',monospace;margin:6px 0">${r.fmt_v}</div>
+        <div style="font-size:.7rem;color:var(--muted)">Benchmark: ${r.bench}</div>
+      </div>`).join('');
+  }
+
+  // Alerts
+  const dashAl=document.getElementById('dash-alerts');
+  if(dashAl){
+    const crits=ratios.filter(r=>{
+      const s=ratioStatus(r.v,r.bv,r.dir);
+      return s==='bad';
+    });
+    const warns=ratios.filter(r=>ratioStatus(r.v,r.bv,r.dir)==='warn');
+    let html='';
+    if(crits.length>0) html+=`<div class="alert danger">🔴 <div><strong>${crits.length} ratio(s) en estado CRÍTICO:</strong> ${crits.map(r=>r.name).join(', ')}. Requieren acción inmediata.</div></div>`;
+    if(warns.length>0) html+=`<div class="alert warn">⚠️ <div><strong>${warns.length} ratio(s) en estado de ALERTA:</strong> ${warns.map(r=>r.name).join(', ')}. Monitorear y planificar mejoras.</div></div>`;
+    if(crits.length===0&&warns.length===0) html=`<div class="alert" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC">✅ <div><strong>Excelente desempeño financiero.</strong> Todos los ratios se encuentran dentro de los parámetros óptimos.</div></div>`;
+    dashAl.innerHTML=html;
+  }
+
+  // Ratio table
+  const tbody=document.getElementById('ratio-tbody');
+  if(tbody){
+    tbody.innerHTML=ratios.map(r=>{
+      const s=ratioStatus(r.v,r.bv,r.dir);
+      return `<tr>
+        <td><strong>${r.name}</strong></td>
+        <td style="color:${r.color}">${r.fmt_v}</td>
+        <td>${r.bench}</td>
+        <td>${statusLabel(s)}</td>
+        <td>${r.interp}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Chart 1: Ratios vs Benchmark
+  destroyChart('ratios-bar');
+  const ctx1=document.getElementById('ch-ratios-bar');
+  if(ctx1){
+    const normalized=ratios.slice(0,6).map(r=>{
+      const n=r.dir==='up'?(r.bv?Math.min((r.v/r.bv)*100,200):0):(r.bv?Math.min((r.bv/r.v)*100,200):0);
+      return {name:r.name,n:parseFloat(n.toFixed(1)),color:r.color};
+    });
+    charts['ratios-bar']=new Chart(ctx1,{
+      type:'bar',
+      data:{
+        labels:normalized.map(r=>r.name),
+        datasets:[
+          {label:'Cumplimiento (%)',data:normalized.map(r=>r.n),backgroundColor:normalized.map(r=>r.color),borderRadius:6,borderSkipped:false},
+          {label:'Óptimo (100%)',data:Array(6).fill(100),type:'line',borderColor:C.navy,borderDash:[4,4],borderWidth:2,pointRadius:0,fill:false}
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},usePointStyle:true}},
+          tooltip:{callbacks:{label:c=>c.dataset.label==='Óptimo (100%)'?'Benchmark: 100%':c.dataset.label+': '+c.raw+'%'}}},
+        scales:{
+          y:{min:0,max:200,ticks:{callback:v=>v+'%',font:{family:'DM Mono',size:10}},grid:{color:'#F1F5F9'}},
+          x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}
+        }
+      }
+    });
+  }
+
+  // Chart 2: Radar
+  destroyChart('radar');
+  const ctx2=document.getElementById('ch-radar');
+  if(ctx2){
+    const dims=[
+      {label:'Liquidez',  score:Math.min(100,D.r_liq/1.5*100)},
+      {label:'P.Ácida',   score:Math.min(100,D.r_acida/1.0*100)},
+      {label:'M.Bruto',   score:Math.min(100,D.r_mb/0.3*100)},
+      {label:'M.Neto',    score:Math.min(100,D.r_mn/0.1*100)},
+      {label:'ROE',       score:Math.min(100,D.r_roe/0.15*100)},
+      {label:'Solvencia', score:Math.min(100,D.r_end<=1?(1)*100:(1/D.r_end)*100)},
+    ];
+    charts['radar']=new Chart(ctx2,{
+      type:'radar',
+      data:{
+        labels:dims.map(d=>d.label),
+        datasets:[{
+          label:'Salud Financiera',
+          data:dims.map(d=>parseFloat(d.score.toFixed(1))),
+          backgroundColor:'rgba(14,165,201,.2)',
+          borderColor:C.teal,
+          pointBackgroundColor:C.teal,
+          pointRadius:4,
+          borderWidth:2
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{family:'DM Mono',size:9}},grid:{color:'#E2E8F0'},pointLabels:{font:{family:'DM Sans',size:11}}}},
+        plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},usePointStyle:true}}}
+      }
+    });
+  }
+
+  // Chart 3: Costos Pie
+  destroyChart('costos-pie');
+  const ctx3=document.getElementById('ch-costos-pie');
+  if(ctx3){
+    const ti=D.total_ing||1;
+    charts['costos-pie']=new Chart(ctx3,{
+      type:'doughnut',
+      data:{
+        labels:['Costo Ventas','Gs.Ventas','Gs.Admin.','Gs.Financ.','Deprec.','Imp.Renta','Utilidad Neta'],
+        datasets:[{
+          data:[D.costo_v,D.gs_v,D.gs_a,D.gs_f,D.deprec,D.ir,Math.max(0,D.ut_neta)].map(v=>parseFloat((v/ti*100).toFixed(2))),
+          backgroundColor:[C.red,'#F97316',C.amber,'#A78BFA',C.slate,'#64748B',C.green],
+          borderWidth:2,borderColor:'#fff',hoverOffset:8
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'55%',
+        plugins:{
+          legend:{position:'right',labels:{padding:12,usePointStyle:true,font:{family:'DM Sans',size:10}}},
+          tooltip:{callbacks:{label:c=>c.label+': '+c.raw+'%'}}
+        }
+      }
+    });
+  }
+
+  // Chart 4: Waterfall
+  destroyChart('waterfall');
+  const ctx4=document.getElementById('ch-waterfall');
+  if(ctx4){
+    const wLabels=['Ing.Total','− Costo V.','Ut.Bruta','− Gs.Op.','EBIT','− Gs.Fin/Dep','Ut.Antes IR','− Imp.Renta','Ut.Neta'];
+    const wVals=[D.total_ing, D.costo_v, D.ut_bruta, D.gs_v+D.gs_a, D.ebit, D.gs_f+D.deprec, D.ut_ai, D.ir, D.ut_neta];
+    const wColors=wVals.map((v,i)=>[0,2,4,6,8].includes(i)?C.teal:C.red);
+    charts['waterfall']=new Chart(ctx4,{
+      type:'bar',
+      data:{
+        labels:wLabels,
+        datasets:[{
+          label:'S/',
+          data:wVals,
+          backgroundColor:wColors,
+          borderRadius:5,borderSkipped:false
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'S/ '+c.raw.toLocaleString('es-PE')}}},
+        scales:{
+          y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>'S/'+v.toLocaleString('es-PE'),font:{family:'DM Mono',size:9}}},
+          x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:9},maxRotation:30}}
+        }
+      }
+    });
+  }
+
+  // Recomendaciones
+  const recEl=document.getElementById('recomendaciones');
+  if(recEl){
+    const recs=[];
+    if(D.r_liq<1.5||D.r_acida<1)
+      recs.push({icon:'💧',title:'Mejorar Liquidez',color:'#EF4444',desc:'Renegociar plazos con proveedores, acelerar cobranzas y reducir cuentas por pagar. Mantener reserva operativa mínima de 3 meses de gastos.'});
+    if(D.r_end>1)
+      recs.push({icon:'📉',title:'Reducir Endeudamiento',color:'#F59E0B',desc:'Evaluar refinanciamiento de deuda a largo plazo, incrementar capital propio y evitar nuevo endeudamiento hasta equilibrar la estructura.'});
+    if(D.s_fin<0)
+      recs.push({icon:'🏦',title:'Gestión de Caja',color:'#EF4444',desc:'Saldo de caja negativo requiere atención urgente. Revisar amortizaciones, negociar nuevas líneas de crédito o diferir inversiones.'});
+    if(D.r_mb>0.5&&D.r_mn>0.2)
+      recs.push({icon:'🚀',title:'Aprovechar Alta Rentabilidad',color:'#10B981',desc:'Los márgenes son excelentes. Considerar reinvertir utilidades en expansión, apertura de nuevas líneas de productos o mercados.'});
+    if(D.r_roe>0.3)
+      recs.push({icon:'💰',title:'Retorno Atractivo',color:'#10B981',desc:'ROE superior al 30% es altamente atractivo. Valorar distribución de dividendos o reinversión estratégica para sostener el crecimiento.'});
+    if(D.r_cob>10)
+      recs.push({icon:'📐',title:'Capacidad de Deuda',color:'#0EA5C9',desc:'Alta cobertura de intereses indica que podría asumir deuda adicional para financiar crecimiento si se normaliza la liquidez.'});
+    if(recs.length===0)
+      recs.push({icon:'✅',title:'Situación Equilibrada',color:'#10B981',desc:'Los indicadores muestran un desempeño financiero sólido. Mantener los controles actuales y monitorear periódicamente.'});
+
+    recEl.innerHTML=recs.map(r=>`
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border-left:4px solid ${r.color}">
+        <div style="font-size:1.1rem;margin-bottom:6px">${r.icon} <strong style="color:${r.color}">${r.title}</strong></div>
+        <div style="font-size:.79rem;color:var(--muted);line-height:1.5">${r.desc}</div>
+      </div>`).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════════
+function restaurarEjemplo(){
+  const defaults={ventas:30000,servicios:1500,otros_ing:100,costo_ventas:200,gs_ventas:60,
+    gs_admin:600,gs_fin:300,deprec:500,tasa_ir:29.5,
+    cobranzas:45000,pag_prov:30000,pag_plan:15000,pag_trib:12500,compra_af:120,
+    prestamos:450,amort:45000,saldo_ini:4600,
+    caja:1500,cxc:2500,inventarios:3500,af_netos:4500,otros_act:5500,
+    cxp:6500,otras_deudas:8500,dlp:7500,capital:9500,reservas:10000};
+  Object.entries(defaults).forEach(([id,v])=>{
+    const el=document.getElementById(id);
+    if(el) el.value=v;
+  });
+  calcularTodo();
+  showToast('↩ Ejemplo restaurado con datos de demostración','info');
+}
+
+function imprimirSeccion(pageId){
+  window.print();
+}
+
+// Clock
+function tick(){
+  const d=new Date();
+  const el=document.getElementById('clock-side');
+  if(el) el.textContent=d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(tick,1000); tick();
+
+// Init
+Chart.defaults.font.family="'DM Sans', sans-serif";
+Chart.defaults.color='#64748B';
+Chart.defaults.plugins.legend.labels.padding=14;
+Chart.defaults.plugins.legend.labels.usePointStyle=true;
+
+// Initial calculation
+calcularTodo();
+</script>
+</body>
+</html>

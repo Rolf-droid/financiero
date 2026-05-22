@@ -1,0 +1,35 @@
+<div id="page-flujo" class="page">
+  <div class="page-header">
+    <h2>💸 Estado de Flujo de Efectivo</h2>
+    <p>Del 01 de enero al 31 de diciembre de 2024 — Expresado en Soles (S/)</p>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi t"><div class="kpi-icon">🔄</div><div class="kpi-label">Flujo Operación</div><div class="kpi-value" id="k-op">—</div><div class="kpi-sub">Actividades operativas</div></div>
+    <div class="kpi a"><div class="kpi-icon">🏗️</div><div class="kpi-label">Flujo Inversión</div><div class="kpi-value" id="k-inv">—</div><div class="kpi-sub">Compra de activos</div></div>
+    <div class="kpi p"><div class="kpi-icon">🏦</div><div class="kpi-label">Flujo Financ.</div><div class="kpi-value" id="k-fin">—</div><div class="kpi-sub">Préstamos y deudas</div></div>
+    <div class="kpi r"><div class="kpi-icon">💼</div><div class="kpi-label">Saldo Final</div><div class="kpi-value" id="k-saldo">—</div><div class="kpi-sub">Efectivo disponible</div></div>
+  </div>
+
+  <div class="alert warn" id="flujo-alert" style="display:none">
+    ⚠️ <div id="flujo-alert-msg"></div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="imprimirSeccion('page-flujo')">🖨️ Imprimir</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;">
+    <div class="card">
+      <div class="card-title"><span>📋</span> Detalle del Flujo de Caja</div>
+      <table class="stmt-table">
+        <tbody id="flujo-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📊</span> Distribución del Flujo</div>
+      <div style="height:260px;position:relative"><canvas id="ch-flujo"></canvas></div>
+      <div class="progress-row" id="flujo-bars" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>

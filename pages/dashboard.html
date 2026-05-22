@@ -1,0 +1,66 @@
+<div id="page-dashboard" class="page">
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+    <div>
+      <h2>📐 Dashboard de Ratios Financieros</h2>
+      <p>Análisis integral para toma de decisiones — Ejercicio 2024</p>
+    </div>
+    <button class="btn-primary" style="flex-shrink:0;margin-top:4px;background:linear-gradient(135deg,#0B1F3A,#EF4444);display:flex;align-items:center;gap:8px;" onclick="exportarPDF()" id="btn-pdf">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Exportar PDF
+    </button>
+  </div>
+
+  <!-- ALERT SUMMARY -->
+  <div id="dash-alerts"></div>
+
+  <!-- RATIO KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" id="ratio-kpis">
+  </div>
+
+  <!-- CHARTS 4-GRID -->
+  <div class="charts-grid-2">
+    <div class="chart-box">
+      <h3>📊 Ratios vs. Benchmark</h3>
+      <div class="chart-desc">Valores actuales comparados con mínimos recomendados por análisis financiero</div>
+      <div class="chart-wrap"><canvas id="ch-ratios-bar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🕸 Perfil de Salud Financiera</h3>
+      <div class="chart-desc">Mapa radial de las dimensiones financieras clave (escala 0–100)</div>
+      <div class="chart-wrap"><canvas id="ch-radar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🥧 Estructura de Costos vs. Utilidad</h3>
+      <div class="chart-desc">Proporción de costos, impuestos y utilidad sobre ingresos totales</div>
+      <div class="chart-wrap"><canvas id="ch-costos-pie"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>📈 Cascada Financiera</h3>
+      <div class="chart-desc">Desde ingresos brutos hasta utilidad neta paso a paso</div>
+      <div class="chart-wrap"><canvas id="ch-waterfall"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RATIO TABLE -->
+  <div class="card">
+    <div class="card-title"><span>📐</span> Tabla Analítica de Ratios — Guía para Decisiones</div>
+    <table class="ratio-table">
+      <thead>
+        <tr>
+          <th>Ratio Financiero</th>
+          <th>Valor Actual</th>
+          <th>Benchmark</th>
+          <th>Estado</th>
+          <th>Interpretación y Acción Recomendada</th>
+        </tr>
+      </thead>
+      <tbody id="ratio-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- RECOMENDACIONES -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Recomendaciones Estratégicas</div>
+    <div id="recomendaciones" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
+  </div>
+</div>
