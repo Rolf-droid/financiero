@@ -41,7 +41,7 @@ Gilberto/
     └── build.py                  # Ensambla index.html desde partials
 ```
 
-## Demo en línea
+
 
 ## Cómo usar
 
