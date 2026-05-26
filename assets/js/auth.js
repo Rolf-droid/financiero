@@ -9,9 +9,85 @@ let REGISTERED_USERS = JSON.parse(localStorage.getItem('andina_users') || '[]');
 
 // Session state
 let SESSION = { user: '', nombre: '', role: 'editor', isAdmin: false };
+const SESSION_STORAGE_KEY = 'andina_session';
 
 // Admin password can be changed and is stored
 let ADMIN_PASS = localStorage.getItem('andina_admin_pass') || 'andina2024';
+
+function saveSession(){
+  if(SESSION.user){
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+      user: SESSION.user,
+      nombre: SESSION.nombre,
+      role: SESSION.role,
+      isAdmin: SESSION.isAdmin
+    }));
+  } else {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+  }
+  updateLogoutVisibility();
+}
+
+function updateLogoutVisibility(){
+  const on = !!SESSION.user;
+  document.querySelectorAll('[data-logout-btn]').forEach(el => { el.hidden = !on; });
+}
+
+function hideLoginScreenImmediate(){
+  const screen = document.getElementById('login-screen');
+  if(!screen) return;
+  screen.style.display = 'none';
+  screen.style.opacity = '1';
+  screen.style.transform = 'none';
+}
+
+function showLoginScreen(){
+  const screen = document.getElementById('login-screen');
+  if(!screen) return;
+  screen.style.display = '';
+  screen.style.opacity = '1';
+  screen.style.transform = 'none';
+}
+
+function restoreSession(){
+  try {
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+    if(!raw) return false;
+    const data = JSON.parse(raw);
+    if(!data || !data.user) return false;
+
+    const all = getAllUsers();
+    if(!all[data.user]){
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      return false;
+    }
+
+    if(data.user === 'admin'){
+      SESSION = { user: 'admin', nombre: 'Admin', role: 'editor', isAdmin: true };
+    } else {
+      const reg = REGISTERED_USERS.find(u => u.user.toLowerCase() === data.user);
+      if(!reg){
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        return false;
+      }
+      SESSION = {
+        user: data.user,
+        nombre: reg.nombre,
+        role: reg.role || 'editor',
+        isAdmin: false
+      };
+    }
+
+    hideLoginScreenImmediate();
+    applyRoleRestrictions();
+    updateSidebarUser();
+    updateLogoutVisibility();
+    return true;
+  } catch {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    return false;
+  }
+}
 
 function getAllUsers(){
   const map = { 'admin': ADMIN_PASS };
@@ -47,6 +123,7 @@ function doLogin(){
 
     applyRoleRestrictions();
     updateSidebarUser();
+    saveSession();
 
     const screen = document.getElementById('login-screen');
     screen.style.transition = 'opacity .5s, transform .5s';
@@ -109,11 +186,8 @@ function updateSidebarUser(){
 
 function doLogout(){
   SESSION = { user: '', nombre: '', role: 'editor', isAdmin: false };
-
-  const screen = document.getElementById('login-screen');
-  screen.style.display = '';
-  screen.style.opacity = '1';
-  screen.style.transform = 'none';
+  saveSession();
+  showLoginScreen();
 
   const userInp = document.getElementById('login-user');
   const passInp = document.getElementById('login-pass');

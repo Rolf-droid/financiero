@@ -35,3 +35,9 @@ Chart.defaults.plugins.legend.labels.usePointStyle=true;
 
 // Initial calculation
 calcularTodo();
+
+if(restoreSession() && typeof showPage === 'function'){
+  showPage('datos');
+} else {
+  updateLogoutVisibility();
+}

@@ -98,6 +98,13 @@ body {
 .btn-logout:hover {
   background: rgba(239, 68, 68, .22); color: #FECACA; border-color: rgba(239, 68, 68, .55);
 }
+.btn-logout-topbar {
+  font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 600;
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  color: #B91C1C; background: #FEF2F2; border: 1px solid #FECACA;
+  transition: background .2s, border-color .2s;
+}
+.btn-logout-topbar:hover { background: #FEE2E2; border-color: #FCA5A5; }
 
 /* ═══════════════════════════════════════════════
    MAIN CONTENT
@@ -381,6 +388,8 @@ body {
   .sidebar .brand-name, .sidebar .brand-sub,
   .sidebar .nav-item span.nav-text, .sidebar .nav-label,
   .sidebar .sidebar-footer { display:none; }
+  .btn-logout-topbar { padding: 7px 10px; font-size: .72rem; }
+  .topbar-right .live-badge { display: none; }
   .main { margin-left:60px; }
   .form-grid { grid-template-columns: 1fr; }
   .kpi-strip { grid-template-columns: 1fr; }
